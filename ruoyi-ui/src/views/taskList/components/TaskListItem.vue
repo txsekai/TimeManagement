@@ -4,8 +4,7 @@
       <div class="task">
         <input type="checkbox" v-model="task.taskStatus" style="margin: 2px"/>
         <div class="task-detail">
-          <template v-if="!task.editing">
-            <div class="task-edit" @click="startEditing(task, index)">
+            <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
               <span>{{ task.taskName }}</span>
               <el-row>
                 <el-tag class="tag-group"
@@ -26,17 +25,15 @@
                 <i v-for="starCount in task.taskPriority" :key="starCount" class="el-icon-star-on"></i>
               </el-row>
             </div>
-          </template>
-          <template v-else>
-            <div class="input-and-settings">
+            <div class="input-and-settings" v-show="task.editing">
               <el-input
                 :id="'task_input_' + index"
                 v-model="task.taskName"
-                ref="taskInputs[index]"
+                :ref="getRefName(index)"
                 @blur="inputBlur(task, index)"
+                class="custom-input"
               ></el-input>
             </div>
-          </template>
         </div>
       </div>
     </el-row>
@@ -86,21 +83,30 @@ export default {
           endRepeatDate: row.repeat.endRepeatDate,
           customResult: row.repeat.customResult
         };
-        this.taskInputs.push(row.taskId - 1);
+        // this.taskInputs.push(row.taskId - 1);
       }
       this.taskList = val;
     },
   },
 
   methods: {
+    getRefName(index) {
+      return `taskInput_${index}`;
+    },
     startEditing(task, index) {
       task.editing = true;
       this.currentTask = task;
 
-      this.$nextTick(() => {
-        // document.getElementById('task_input_' + index).focus();
-        this.$refs.taskInputs[index].focus();
-      })
+      this.$nextTick().then(() => {
+        setTimeout(() => {
+          // this.$refs[this.getRefName(index)].focus();
+          // document.getElementById('task_input_' + index).focus()
+          const inputElement = document.getElementById(`task_input_${index}`);
+          if (inputElement) {
+            inputElement.focus();
+          }
+        }, 300);
+      });
     },
     inputBlur(task, index) {
       if (task.taskName === '' || task.taskName === undefined) {
@@ -111,6 +117,8 @@ export default {
         }).then(() => {
 
         })
+      }else {
+        task.editing = false;
       }
     },
   },
@@ -138,5 +146,11 @@ export default {
 .input-and-settings {
   display: flex;
   flex-direction: column;
+}
+
+.custom-input .el-input__inner {
+  display: block;
+  width: 100%;
+  height: 36px;
 }
 </style>
