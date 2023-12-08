@@ -70,7 +70,7 @@
 
     <select id="selectToDoList" parameterType="TaskListQueryParam" resultMap="TaskListResult">
         <include refid="selectTaskListVo" />
-        where tl.task_status = 0
+        where tl.task_status in( '0', '1', '2')
         <if test="taskName != null and taskName != ''" >
             and tl.task_name like concat('%', #{taskName}, '%')
         </if>

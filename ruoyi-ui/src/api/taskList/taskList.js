@@ -24,6 +24,14 @@ export function updateTaskName(data) {
   })
 }
 
+export function updateTaskStatus(data) {
+  return request({
+    url: '/taskList/updateTaskStatus',
+    method: "put",
+    data: data
+  })
+}
+
 export function delTask(taskId) {
   return request({
     url: '/taskList/' + taskId,

@@ -3,6 +3,7 @@
        @click="showDropdown">
     <ul v-show="isDropdownVisible" @click.stop class="user-select-none">
       <li v-for="option in options" :key="option.value"
+          :value="option.value"
           class="dropdown-item"
           @click="selectOption(option)">{{ option.label }}
       </li>
@@ -13,6 +14,22 @@
 <script>
 export default {
   name: 'TaskStatusItem',
+  props: {
+    value: {
+      type: String,
+    },
+  },
+
+  created() {
+    this.selectedValue = this.value;
+  },
+
+  watch: {
+    value(val) {
+      this.selectedValue = val;
+    }
+  },
+
   data() {
     return {
       selectedValue: '',
@@ -33,12 +50,12 @@ export default {
   },
 
   computed: {
-    isSolidCircle() {
-      return this.selectedValue === 'Done';
-    },
     isHalfCircle() {
-      return this.selectedValue === 'Doing';
-    }
+      return this.selectedValue === '1';
+    },
+    isSolidCircle() {
+      return this.selectedValue === '2';
+    },
   },
 
   methods: {
@@ -46,8 +63,9 @@ export default {
       this.isDropdownVisible = !this.isDropdownVisible;
     },
     selectOption(option) {
-      this.selectedValue = option.label;
+      this.selectedValue = option.value;
       this.isDropdownVisible = false;
+      this.$emit('input', this.selectedValue)
     },
   }
 }
