@@ -16,17 +16,17 @@ export function addTask(data) {
   })
 }
 
-export function updateTaskName(data) {
+export function updateTaskStatus(data) {
   return request({
-    url: '/taskList/updateTaskName',
+    url: '/taskList/updateTaskStatus',
     method: "put",
     data: data
   })
 }
 
-export function updateTaskStatus(data) {
+export function updateTaskName(data) {
   return request({
-    url: '/taskList/updateTaskStatus',
+    url: '/taskList/updateTaskName',
     method: "put",
     data: data
   })

@@ -27,6 +27,12 @@ public class TaskListServiceImpl implements ITaskListService {
 
     @Override
     @Transactional
+    public int updateTaskStatus(TaskList taskList) {
+        return taskListMapper.updateTaskStatus(taskList);
+    }
+
+    @Override
+    @Transactional
     public int updateTaskName(TaskList taskList) {
         return taskListMapper.updateTaskName(taskList);
     }

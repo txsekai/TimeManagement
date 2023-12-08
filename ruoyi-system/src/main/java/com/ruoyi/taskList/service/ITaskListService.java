@@ -10,6 +10,8 @@ public interface ITaskListService {
 
     public int insertTaskList(TaskList taskList);
 
+    public int updateTaskStatus(TaskList taskList);
+
     public int updateTaskName(TaskList taskList);
 
     public int deleteTaskByIds(Long[] taskIds);

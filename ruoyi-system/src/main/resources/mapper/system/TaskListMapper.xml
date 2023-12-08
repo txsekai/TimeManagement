@@ -97,6 +97,10 @@
         )
     </insert>
 
+    <update id="updateTaskStatus" parameterType="TaskList">
+        update task_list set task_status = #{taskStatus} where task_id = #{taskId}
+    </update>
+
     <update id="updateTaskName" parameterType="TaskList">
         update task_list set task_name = #{taskName} where task_id = #{taskId}
     </update>

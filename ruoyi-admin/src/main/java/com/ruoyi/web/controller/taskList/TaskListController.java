@@ -29,6 +29,11 @@ public class TaskListController extends BaseController {
         return toAjax(taskListService.insertTaskList(taskList));
     }
 
+    @PutMapping("/updateTaskStatus")
+    public AjaxResult editTaskStatus(@Validated @RequestBody TaskList taskList) {
+        return toAjax(taskListService.updateTaskStatus(taskList));
+    }
+
     @PutMapping("/updateTaskName")
     public AjaxResult editTaskName(@Validated @RequestBody TaskList taskList) {
         return toAjax(taskListService.updateTaskName(taskList));

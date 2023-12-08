@@ -12,27 +12,25 @@
 </template>
 
 <script>
+import {updateTaskStatus} from "../../../api/taskList/taskList";
+
 export default {
   name: 'TaskStatusItem',
   props: {
-    value: {
-      type: String,
+    task: {
+      type: Object,
     },
   },
 
-  created() {
-    this.selectedValue = this.value;
-  },
-
   watch: {
-    value(val) {
-      this.selectedValue = val;
+    'task.taskStatus'() {
+       // console.log(this.task.taskId, this.task.taskStatus)
+      updateTaskStatus(this.task).then
     }
   },
 
   data() {
     return {
-      selectedValue: '',
       isDropdownVisible: false,
       options: [
         {
@@ -51,10 +49,10 @@ export default {
 
   computed: {
     isHalfCircle() {
-      return this.selectedValue === '1';
+      return this.task.taskStatus === '1';
     },
     isSolidCircle() {
-      return this.selectedValue === '2';
+      return this.task.taskStatus === '2';
     },
   },
 
@@ -63,9 +61,8 @@ export default {
       this.isDropdownVisible = !this.isDropdownVisible;
     },
     selectOption(option) {
-      this.selectedValue = option.value;
+      this.task.taskStatus = option.value;
       this.isDropdownVisible = false;
-      this.$emit('input', this.selectedValue)
     },
   }
 }
