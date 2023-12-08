@@ -2,7 +2,7 @@
   <div>
     <el-row v-for="(task, index) in taskList" :key="'taskList_'+index">
       <div class="task">
-        <input type="checkbox" v-model="task.taskStatus" style="margin: 2px"/>
+        <task-status-item v-model="task.taskStatus" style="margin: 2px"></task-status-item>
         <div class="task-detail">
             <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
 

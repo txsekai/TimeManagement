@@ -35,14 +35,13 @@
     </el-form>
     <div class="card-container grid">
       <el-card>
-        <div>TO DO</div>
+        <div>To Do</div>
         <div>
           <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
         </div>
       </el-card>
 
       <el-card>
-        <task-status-item></task-status-item>
       </el-card>
 
       <el-card>
@@ -56,12 +55,11 @@ import DictSelect from "./components/dictSelect.vue";
 import TaskListItem from "./components/taskListItem.vue";
 import FormatList from "./mixins/formatList";
 import {listToDoTask} from "../../api/taskList/taskList";
-import TaskStatusItem from "./components/taskStatusItem.vue";
 
 export default {
   name: 'List',
   mixins: [FormatList],
-  components: {TaskStatusItem, TaskListItem, DictSelect},
+  components: {TaskListItem, DictSelect},
 
   data() {
     return {

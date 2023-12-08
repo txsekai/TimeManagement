@@ -1,8 +1,11 @@
 <template>
   <div :class="['circle-button', {'solid-circle': isSolidCircle, 'half-circle': isHalfCircle}]"
-       @mouseenter="showDropdown" @mouseleave="hideDropdown">
-    <ul v-show="isDropdownVisible" @click="selectOption">
-      <li v-for="option in options" :key="option.value" class="dropdown-item">{{ option.label }}</li>
+       @click="showDropdown">
+    <ul v-show="isDropdownVisible" @click.stop class="user-select-none">
+      <li v-for="option in options" :key="option.value"
+          class="dropdown-item"
+          @click="selectOption(option)">{{ option.label }}
+      </li>
     </ul>
   </div>
 </template>
@@ -17,11 +20,11 @@ export default {
       options: [
         {
           value: '0',
-          label: 'TODO'
-        },{
+          label: 'To Do'
+        }, {
           value: '1',
           label: 'Doing'
-        },{
+        }, {
           value: '2',
           label: 'Done'
         },
@@ -40,13 +43,11 @@ export default {
 
   methods: {
     showDropdown() {
-      this.isDropdownVisible = true;
+      this.isDropdownVisible = !this.isDropdownVisible;
     },
-    hideDropdown() {
+    selectOption(option) {
+      this.selectedValue = option.label;
       this.isDropdownVisible = false;
-    },
-    selectOption(event) {
-      this.selectedValue = event.target.textContent;
     },
   }
 }
@@ -56,8 +57,8 @@ export default {
 .circle-button {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   border: 3px solid #409EFF;
   border-radius: 50%;
   text-align: center;
@@ -84,11 +85,12 @@ ul {
   list-style: none;
   padding: 0;
   margin: 0;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
+  color: #606266;
+  background-color: #fff;
+  border: 1px solid #DCDFE6;
   border-radius: 4px;
   z-index: 1;
-  top: 30px;
+  top: 20px;
 }
 
 .dropdown-item {
@@ -97,6 +99,11 @@ ul {
 }
 
 .dropdown-item:hover {
-  background-color: #e3e3e3;
+  color: #1890ff;
+  background-color: #F5F7FA;
+}
+
+.user-select-none {
+  user-select: none;
 }
 </style>
