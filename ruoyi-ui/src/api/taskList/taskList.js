@@ -8,6 +8,22 @@ export function listToDoTask(query) {
   })
 }
 
+export function addTask(data) {
+  return request({
+    url: '/taskList/addTask',
+    method: "post",
+    data: data
+  })
+}
+
+export function updateTaskName(data) {
+  return request({
+    url: '/taskList/updateTaskName',
+    method: "put",
+    data: data
+  })
+}
+
 export function delTask(taskId) {
   return request({
     url: '/taskList/' + taskId,

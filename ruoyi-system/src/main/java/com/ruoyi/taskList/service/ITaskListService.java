@@ -7,4 +7,10 @@ import java.util.List;
 
 public interface ITaskListService {
     public List<TaskList> selectToDoList(TaskListQueryParam taskListQueryParam);
+
+    public int insertTaskList(TaskList taskList);
+
+    public int updateTaskName(TaskList taskList);
+
+    public int deleteTaskByIds(Long[] taskIds);
 }

@@ -37,28 +37,31 @@
       <el-card>
         <div>TO DO</div>
         <div>
-          <task-list-item :todo-list="todoList"></task-list-item>
+          <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
         </div>
       </el-card>
 
       <el-card>
+        <task-status-item></task-status-item>
       </el-card>
 
       <el-card>
-
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import DictSelect from "./components/DictSelect.vue";
-import TaskListItem from "./components/TaskListItem.vue";
+import DictSelect from "./components/dictSelect.vue";
+import TaskListItem from "./components/taskListItem.vue";
+import FormatList from "./mixins/formatList";
 import {listToDoTask} from "../../api/taskList/taskList";
+import TaskStatusItem from "./components/taskStatusItem.vue";
 
 export default {
   name: 'List',
-  components: {TaskListItem, DictSelect},
+  mixins: [FormatList],
+  components: {TaskStatusItem, TaskListItem, DictSelect},
 
   data() {
     return {
@@ -78,11 +81,11 @@ export default {
   methods: {
     getToDoList() {
       listToDoTask(this.queryParams).then(res => {
-        this.todoList = res.data;
+        this.todoList = this.formattedToDoList(res.data);
       })
     },
     handleQuery() {
-      this.getToDoList()
+      this.getToDoList();
     },
     resetQuery() {
       this.resetForm("queryForm");

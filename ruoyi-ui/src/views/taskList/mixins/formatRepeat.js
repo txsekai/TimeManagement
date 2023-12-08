@@ -58,7 +58,7 @@ const RepeatMixin = {
           }
         }
 
-        if(repeat.customResult.num !== null) {
+        if(repeat.customResult.num !== null && repeat.customResult.num !== undefined) {
           formattedRepeat = formattedRepeat +
             `<br>每${repeat.customResult.num}`+
             `${repeat.customResult.frequencyValue == REPEAT_SELECT.MONTH ? '个' : ''}`+

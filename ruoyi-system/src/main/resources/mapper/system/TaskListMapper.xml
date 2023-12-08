@@ -80,5 +80,33 @@
         <if test="taskPriority !=null and taskPriority != ''">
             and tl.task_priority = #{taskPriority}
         </if>
+        order by tl.task_id
     </select>
+
+    <insert id="insertTaskList" parameterType="TaskList" useGeneratedKeys="true" keyProperty="taskId">
+        insert into task_list(
+            <if test="taskName != null and taskName != ''">task_name,</if>
+            <if test="taskStatus != null and taskStatus != '0'">task_status,</if>
+            create_time,
+            user_id
+        )values(
+            <if test="taskName != null and taskName != ''">#{taskName},</if>
+            <if test="taskStatus != null and taskStatus != '0'">#{taskStatus},</if>
+            sysdate(),
+            1
+        )
+    </insert>
+
+    <update id="updateTaskName" parameterType="TaskList">
+        update task_list set task_name = #{taskName} where task_id = #{taskId}
+    </update>
+
+    <delete id="deleteTaskByIds" parameterType="Long">
+        delete
+        from task_list
+        where task_id in
+        <foreach collection="array" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
 </mapper>
