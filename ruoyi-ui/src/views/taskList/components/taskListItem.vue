@@ -2,7 +2,7 @@
   <div>
     <el-row v-for="(task, index) in taskList" :key="'taskList_'+index">
       <div class="task">
-        <task-status-item :task="task" style="margin: 2px"></task-status-item>
+        <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
 
         <div class="task-detail">
             <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
@@ -124,7 +124,7 @@ export default {
           type: "warning"
         }).then(() => {
           delTask(task.taskId).then(() => {
-            this.$modal.msgSuccess("删除成功");
+            this.$modal.msgSuccess("删除任务成功");
             this.getToDoList();
           }).catch(() => {})
         })
@@ -133,7 +133,7 @@ export default {
         setTimeout(() => {
           task.editing = false;
           addTask(task).then(res => {
-            this.$modal.msgSuccess("新增成功");
+            this.$modal.msgSuccess("新增任务成功");
             this.getToDoList();
           })
         }, 300)
@@ -170,6 +170,33 @@ export default {
     openTagDialog(task) {
 
     },
+    handleOutsideClick(event) {
+      let point = event.target;
+      if(!point.classList.contains('circle-button')) {
+        while (point.parentElement !== null) {
+          point = point.parentElement;
+          if(point.classList.contains('circle-button')){
+            // 点击的是circle button的选项
+            return;
+          }
+        }
+
+        //执行到这里
+        //说明点的是outSide
+        //处理side的的事件
+        this.$refs.taskStatusItem.forEach(item => {
+          item.hideDropdown();
+        })
+      }
+    },
+  },
+
+  mounted() {
+    document.addEventListener("click", this.handleOutsideClick);
+  },
+
+  beforeDestroy() {
+    document.removeEventListener("click", this.handleOutsideClick);
   },
 }
 </script>

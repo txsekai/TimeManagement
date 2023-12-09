@@ -1,7 +1,7 @@
 <template>
   <div :class="['circle-button', {'solid-circle': isSolidCircle, 'half-circle': isHalfCircle}]"
        @click="showDropdown">
-    <ul v-show="isDropdownVisible" @click.stop class="user-select-none">
+    <ul v-show="isDropdownVisible" @click.stop class="user-select-none status-dropdown">
       <li v-for="option in options" :key="option.value"
           :value="option.value"
           class="dropdown-item"
@@ -24,8 +24,9 @@ export default {
 
   watch: {
     'task.taskStatus'() {
-       // console.log(this.task.taskId, this.task.taskStatus)
-      updateTaskStatus(this.task).then
+      updateTaskStatus(this.task).then(res => {
+        this.$modal.msgSuccess("任务状态修改成功");
+      })
     }
   },
 
@@ -64,6 +65,9 @@ export default {
       this.task.taskStatus = option.value;
       this.isDropdownVisible = false;
     },
+    hideDropdown() {
+      this.isDropdownVisible = false;
+    }
   }
 }
 </script>
@@ -109,7 +113,7 @@ ul {
 }
 
 .dropdown-item {
-  padding: 2px 3px;
+  padding: 2px 4px;
   cursor: pointer;
 }
 
