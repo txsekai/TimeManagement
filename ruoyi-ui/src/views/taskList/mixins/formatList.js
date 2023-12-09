@@ -4,6 +4,7 @@ const FormatList = {
   methods: {
     formattedToDoList(todoList) {
       for (let row of todoList) {
+        row.initialTaskName = row.taskName;
         if(row.taskStartTime !== null && row.taskCompletedTime !== null) {
           row.dateAndTime = {startTime: new Date(row.taskStartTime), completedTime: new Date(row.taskCompletedTime)};
         }else {

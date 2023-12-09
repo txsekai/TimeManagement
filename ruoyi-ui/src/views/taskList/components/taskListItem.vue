@@ -129,13 +129,14 @@ export default {
           }).catch(() => {})
         })
       }else {
-        // bug 没修改的taskName, blur之后就新增
         setTimeout(() => {
+          if(task.initialTaskName == undefined) {
+            addTask(task).then(res => {
+              this.$modal.msgSuccess("新增任务成功");
+            })
+          }
           task.editing = false;
-          addTask(task).then(res => {
-            this.$modal.msgSuccess("新增任务成功");
-            this.getToDoList();
-          })
+          this.getToDoList();
         }, 300)
       }
     },
