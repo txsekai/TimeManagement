@@ -127,6 +127,8 @@ export default {
             this.$modal.msgSuccess("删除任务成功");
             this.getToDoList();
           }).catch(() => {})
+        }).catch(() => {
+          this.getToDoList();
         })
       }else {
         setTimeout(() => {
@@ -141,7 +143,7 @@ export default {
       }
     },
     taskNameInputChange(task) {
-      if(task.taskId !== undefined) {
+      if(task.taskId !== undefined && task.taskName !== '') {
         updateTaskName(task).then(res => {
           this.$modal.msgSuccess("任务名称修改成功");
           this.getToDoList();
