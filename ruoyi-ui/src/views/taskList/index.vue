@@ -6,7 +6,7 @@
       size="small"
       :inline="true"
     >
-      <el-form-item label="任务名称">
+      <el-form-item label="任务名称" prop="taskName">
         <el-input
           v-model="queryParams.taskName"
           placeholder="请输入任务名称"
@@ -15,7 +15,7 @@
           @keyup.enter.native="handleQuery"
         ></el-input>
       </el-form-item>
-      <el-form-item label="标签名称">
+      <el-form-item label="标签名称" prop="tagName">
         <el-input
           v-model="queryParams.tagName"
           placeholder="请输入标签名称"
@@ -24,7 +24,7 @@
           @keyup.enter.native="handleQuery"
         ></el-input>
       </el-form-item>
-      <el-form-item label="任务优先级">
+      <el-form-item label="任务优先级" prop="taskPriority">
         <dict-select type="taskList_priority" v-model="queryParams.taskPriority"
                      placeholder="请选择"></dict-select>
       </el-form-item>
@@ -33,6 +33,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
+
     <div class="card-container grid">
       <el-card>
         <div>To Do</div>
@@ -86,7 +87,7 @@ export default {
       this.getToDoList();
     },
     resetQuery() {
-      this.resetForm("queryForm");
+      this.resetForm("queryForm")
       this.handleQuery();
     },
   }

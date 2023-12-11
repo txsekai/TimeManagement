@@ -1,13 +1,13 @@
 <template>
   <div>
-    <el-row v-for="(task, index) in taskList" :key="'taskList_'+index">
+    <el-row v-for="(task, index) in taskList" :key="'taskList_'+index" style="margin-bottom: 10px">
       <div class="task">
         <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
 
         <div class="task-detail">
             <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
 
-              <span>{{ task.taskName }}</span>
+              <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
 
               <el-row>
                 <el-tag class="tag-group"
@@ -38,7 +38,7 @@
                 @blur="inputBlur(task)"
                 @change="taskNameInputChange(task)"
               ></el-input>
-              <el-row v-if="showSettings" style="display: flex; align-items: center">
+              <el-row v-if="showSettings" class="settings-row">
                 <el-tooltip content="标签" placement="bottom-start">
                   <el-button
                     class="setting-icon"
@@ -216,8 +216,7 @@ export default {
 }
 
 .tag-group {
-  margin-left: 3px;
-  margin-bottom: 5px;
+  margin: 3px;
   height: 20px;
   line-height: 20px;
 }
@@ -225,6 +224,12 @@ export default {
 .input-and-settings {
   display: flex;
   flex-direction: column;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .setting-icon {

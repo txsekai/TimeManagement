@@ -22,13 +22,7 @@ export default {
     },
   },
 
-  watch: {
-    'task.taskStatus'() {
-      updateTaskStatus(this.task).then(res => {
-        this.$modal.msgSuccess("任务状态修改成功");
-      })
-    }
-  },
+  watch: {},
 
   data() {
     return {
@@ -62,7 +56,14 @@ export default {
       this.isDropdownVisible = !this.isDropdownVisible;
     },
     selectOption(option) {
-      this.task.taskStatus = option.value;
+      if (this.task.taskStatus !== option.value) {
+        this.task.taskStatus = option.value;
+
+        updateTaskStatus(this.task).then(res => {
+          this.$modal.msgSuccess("任务状态修改成功");
+        })
+      }
+
       this.isDropdownVisible = false;
     },
     hideDropdown() {
@@ -120,9 +121,5 @@ ul {
 .dropdown-item:hover {
   color: #1890ff;
   background-color: #F5F7FA;
-}
-
-.user-select-none {
-  user-select: none;
 }
 </style>
