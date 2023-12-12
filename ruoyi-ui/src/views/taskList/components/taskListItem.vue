@@ -5,54 +5,58 @@
         <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
 
         <div class="task-detail">
-            <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
+          <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
 
-              <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
+            <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
 
-              <el-row>
-                <el-tag class="tag-group"
-                        v-for="tag in task.tags"
-                        :key="tag.tagId"
-                >{{ tag.tagName }}
-                </el-tag>
-              </el-row>
+            <el-row>
+              <el-tag class="tag-group"
+                      v-for="tag in task.tags"
+                      :key="tag.tagId"
+              >{{ tag.tagName }}
+              </el-tag>
+            </el-row>
 
-              <el-row v-if="task.dateAndTime.startTime">
-                <span>开始：{{ formatDate(task.dateAndTime.startTime) }}</span>
-                <span v-if="task.dateAndTime.completedTime"> ~ </span>
-                <span v-if="task.dateAndTime.completedTime">完成：{{
-                    formatDate(task.dateAndTime.completedTime)
-                  }}</span>
-              </el-row>
-              <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(task.repeat)"></el-row>
-              <el-row v-if="task.taskPriority!=='0'">
-                <i v-for="starCount in task.taskPriority" :key="starCount" class="el-icon-star-on"></i>
-              </el-row>
-            </div>
+            <el-row v-if="task.dateAndTime.startTime">
+              <span>开始：{{ formatDate(task.dateAndTime.startTime) }}</span>
+              <span v-if="task.dateAndTime.completedTime"> ~ </span>
+              <span v-if="task.dateAndTime.completedTime">完成：{{
+                  formatDate(task.dateAndTime.completedTime)
+                }}</span>
+            </el-row>
+            <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(task.repeat)"></el-row>
+            <el-row v-if="task.taskPriority!=='0'">
+              <i v-for="starCount in task.taskPriority" :key="starCount" class="el-icon-star-on"></i>
+            </el-row>
+          </div>
 
-            <div class="input-and-settings" v-show="task.editing">
-              <el-input
-                :id="'task_input_' + index"
-                v-model="task.taskName"
-                ref="taskInputs"
-                @blur="inputBlur(task)"
-                @change="taskNameInputChange(task)"
-              ></el-input>
-              <el-row v-if="showSettings" class="settings-row">
-                <el-tooltip content="标签" placement="bottom-start">
-                  <el-button
-                    class="setting-icon"
-                    icon="el-icon-discount"
-                    @click="openTagDialog(task)"
-                  ></el-button>
-                </el-tooltip>
-              </el-row>
-            </div>
+          <div class="input-and-settings" v-show="task.editing">
+            <el-input
+              :id="'task_input_' + index"
+              v-model="task.taskName"
+              ref="taskInputs"
+              @blur="inputBlur(task)"
+              @change="taskNameInputChange(task)"
+            ></el-input>
+            <el-row v-if="showSettings" class="settings-row">
+              <el-tooltip content="标签" placement="bottom-start">
+                <el-button
+                  class="setting-icon"
+                  icon="el-icon-discount"
+                  @click="openTagDialog(task)"
+                ></el-button>
+              </el-tooltip>
+            </el-row>
+          </div>
         </div>
       </div>
     </el-row>
 
     <el-button class="add-list-button" @click="addTask">+ 添加事项</el-button>
+
+    <tag-dialog :tag-dialog-visible="tagDialogVisible" :task="currentTask"
+                @tagConfirm="tagDialogVisible=false"
+                @tagCancel="tagDialogVisible=false"></tag-dialog>
   </div>
 </template>
 
@@ -62,10 +66,11 @@ import RepeatMixin from "../mixins/formatRepeat";
 import FormatList from "../mixins/formatList";
 import {addTask, delTask, listToDoTask, updateTaskName} from "../../../api/taskList/taskList";
 import TaskStatusItem from "./taskStatusItem.vue";
+import TagDialog from "../dialogs/tagDialog.vue";
 
 export default {
   name: 'TaskListItem',
-  components: {TaskStatusItem},
+  components: {TagDialog, TaskStatusItem},
   mixins: [DateMixin, RepeatMixin, FormatList],
 
   props: {
@@ -82,6 +87,8 @@ export default {
       taskList: [],
       currentTask: {},
       taskInputs: [],
+
+      tagDialogVisible: false,
     }
   },
 
@@ -93,7 +100,7 @@ export default {
 
   computed: {
     showSettings() {
-      if(this.currentTask.taskName) {
+      if (this.currentTask.taskName) {
         return this.currentTask.taskName.length !== 0
       }
     }
@@ -106,14 +113,14 @@ export default {
       })
     },
     startEditing(task, index) {
-      this.$set(task, 'editing' , true);
+      this.$set(task, 'editing', true);
       this.currentTask = task;
 
       this.$nextTick().then(() => {
-          const inputElement = document.getElementById(`task_input_${index}`);
-          if (inputElement) {
-            inputElement.focus();
-          }
+        const inputElement = document.getElementById(`task_input_${index}`);
+        if (inputElement) {
+          inputElement.focus();
+        }
       });
     },
     inputBlur(task) {
@@ -126,13 +133,14 @@ export default {
           delTask(task.taskId).then(() => {
             this.$modal.msgSuccess("删除任务成功");
             this.getToDoList();
-          }).catch(() => {})
+          }).catch(() => {
+          })
         }).catch(() => {
           this.getToDoList();
         })
-      }else {
+      } else {
         setTimeout(() => {
-          if(task.initialTaskName == undefined) {
+          if (task.initialTaskName == undefined) {
             addTask(task).then(res => {
               this.$modal.msgSuccess("新增任务成功");
             })
@@ -143,7 +151,7 @@ export default {
       }
     },
     taskNameInputChange(task) {
-      if(task.taskId !== undefined && task.taskName !== '') {
+      if (task.taskId !== undefined && task.taskName !== '') {
         updateTaskName(task).then(res => {
           this.$modal.msgSuccess("任务名称修改成功");
           this.getToDoList();
@@ -171,14 +179,15 @@ export default {
       })
     },
     openTagDialog(task) {
-
+      this.currentTask = task;
+      this.tagDialogVisible = true;
     },
     handleOutsideClick(event) {
       let point = event.target;
-      if(!point.classList.contains('circle-button')) {
+      if (!point.classList.contains('circle-button')) {
         while (point.parentElement !== null) {
           point = point.parentElement;
-          if(point.classList.contains('circle-button')){
+          if (point.classList.contains('circle-button')) {
             // 点击的是circle button的选项
             return;
           }

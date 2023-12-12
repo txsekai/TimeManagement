@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskList.mapper.TagMapper">
+    <resultMap id="TagListResult" type="com.ruoyi.taskList.domain.entity.Tag">
+        <id property="tagId" column="tag_id"/>
+        <result property="tagName" column="tag_name" />
+    </resultMap>
+
+    <resultMap id="TaskTagsListResult" type="com.ruoyi.taskList.domain.entity.TaskList">
+        <result property="taskId" column="task_id" />
+        <result property="tagId" column="tag_id" />
+    </resultMap>
+
+    <sql id="selectTagListVo">
+        select t.tag_id,
+               t.tag_name
+        from tag t
+    </sql>
+
+    <sql id="tagTaskListVo">
+        select tt.task_id,
+               tt.tag_id
+        from task_tags tt
+    </sql>
+
+    <select id="selectTagList" resultMap="TagListResult">
+        <include refid="selectTagListVo"></include>
+        order by t.tag_id
+    </select>
+
+    <select id="checkTagNameUnique" parameterType="java.util.List" resultMap="TagListResult">
+        select tag_id,
+               tag_name
+        from tag
+        where tag_name in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <insert id="insertTags" useGeneratedKeys="true" keyProperty="tagId">
+        insert into tag (tag_name)
+        values
+        <foreach collection="list" item="tag" separator=",">
+            (#{tag.tagName})
+        </foreach>
+    </insert>
+
+    <delete id="deleteTagById" parameterType="Long">
+        delete
+        from tag
+        where tag_id = #{tagId}
+    </delete>
+
+    <insert id="insertTagToTask">
+        insert into task_tags(
+            task_id,
+            tag_id
+        )values
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{taskId},
+             #{tagId})
+        </foreach>
+    </insert>
+
+    <delete id="delTagToTask" parameterType="TaskTagsParam">
+        delete
+        from task_tags
+        where task_id = #{taskId}
+        and tag_id in
+        <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
+            #{tagId}
+        </foreach>
+    </delete>
+</mapper>
