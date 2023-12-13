@@ -45,3 +45,11 @@ export function deselectTagToTask(taskId, tagIds) {
     data: data
   })
 }
+
+export function listTaskTags(query) {
+  return request({
+    url: 'taskList/tag/taskTags/list',
+    method: "get",
+    params: query
+  })
+}

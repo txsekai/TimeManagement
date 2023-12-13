@@ -8,9 +8,10 @@
         <result property="tagName" column="tag_name" />
     </resultMap>
 
-    <resultMap id="TaskTagsListResult" type="com.ruoyi.taskList.domain.entity.TaskList">
+    <resultMap id="TaskTagsListResult" type="com.ruoyi.taskList.domain.entity.TaskTags">
         <result property="taskId" column="task_id" />
         <result property="tagId" column="tag_id" />
+        <association property="tagData" javaType="Tag" resultMap="TagListResult"></association>
     </resultMap>
 
     <sql id="selectTagListVo">
@@ -19,10 +20,12 @@
         from tag t
     </sql>
 
-    <sql id="tagTaskListVo">
+    <sql id="taskTagsListVo">
         select tt.task_id,
-               tt.tag_id
+               tt.tag_id,
+               t.tag_name
         from task_tags tt
+        left join tag t on t.tag_id = tt.tag_id
     </sql>
 
     <select id="selectTagList" resultMap="TagListResult">
@@ -40,7 +43,7 @@
         </foreach>
     </select>
 
-    <insert id="insertTags" useGeneratedKeys="true" keyProperty="tagId">
+    <insert id="insertTag" useGeneratedKeys="true" keyProperty="tagId">
         insert into tag (tag_name)
         values
         <foreach collection="list" item="tag" separator=",">
@@ -51,6 +54,12 @@
     <delete id="deleteTagById" parameterType="Long">
         delete
         from tag
+        where tag_id = #{tagId}
+    </delete>
+
+    <delete id="deleteTagInTaskTags" parameterType="Long">
+        delete
+        from task_tags
         where tag_id = #{tagId}
     </delete>
 
@@ -74,4 +83,9 @@
             #{tagId}
         </foreach>
     </delete>
+
+    <select id="selectTaskTagsList" parameterType="Long" resultMap="TaskTagsListResult">
+        <include refid="taskTagsListVo"></include>
+        where tt.task_id = #{taskId}
+    </select>
 </mapper>

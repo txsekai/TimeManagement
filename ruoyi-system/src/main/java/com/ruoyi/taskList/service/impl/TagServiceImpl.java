@@ -1,6 +1,7 @@
 package com.ruoyi.taskList.service.impl;
 
 import com.ruoyi.taskList.domain.entity.Tag;
+import com.ruoyi.taskList.domain.entity.TaskTags;
 import com.ruoyi.taskList.domain.query.TaskTagsParam;
 import com.ruoyi.taskList.mapper.TagMapper;
 import com.ruoyi.taskList.service.ITagService;
@@ -34,8 +35,8 @@ public class TagServiceImpl implements ITagService {
 
     @Override
     @Transactional
-    public int insertTags(List<Tag> tags) {
-        int rows = tagMapper.insertTags(tags);
+    public int insertTag(List<Tag> tags) {
+        int rows = tagMapper.insertTag(tags);
 
         return rows;
     }
@@ -48,6 +49,12 @@ public class TagServiceImpl implements ITagService {
 
     @Override
     @Transactional
+    public int deleteTagInTaskTags(Long tagId) {
+        return tagMapper.deleteTagInTaskTags(tagId);
+    }
+
+    @Override
+    @Transactional
     public int insertTagToTask(TaskTagsParam taskTagsParam) {
         return tagMapper.insertTagToTask(taskTagsParam);
     }
@@ -56,5 +63,10 @@ public class TagServiceImpl implements ITagService {
     @Transactional
     public int delTagToTask(TaskTagsParam taskTagsParam) {
         return tagMapper.delTagToTask(taskTagsParam);
+    }
+
+    @Override
+    public List<TaskTags> selectTaskTagsList(Long taskId) {
+        return tagMapper.selectTaskTagsList(taskId);
     }
 }

@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.taskList;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.taskList.domain.entity.Tag;
+import com.ruoyi.taskList.domain.entity.TaskTags;
 import com.ruoyi.taskList.domain.query.TaskTagsParam;
 import com.ruoyi.taskList.service.ITagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +26,20 @@ public class TagController extends BaseController {
     }
 
     @PostMapping("/addTags")
-    public AjaxResult addTags(@Validated @RequestBody List<Tag> tags) {
+    public AjaxResult add(@Validated @RequestBody List<Tag> tags) {
         if(!tagService.checkTagNameUnique(tags)) {
             return error("标签有重复");
         }
 
-        return toAjax(tagService.insertTags(tags));
+        return toAjax(tagService.insertTag(tags));
     }
 
     @DeleteMapping("/{tagId}")
     public AjaxResult removeTagId(@PathVariable Long tagId) {
-        return toAjax(tagService.deleteTagById(tagId));
+        tagService.deleteTagById(tagId);
+        tagService.deleteTagInTaskTags(tagId);
+
+        return success();
     }
 
     @PostMapping("/selectTagToTask")
@@ -46,5 +50,12 @@ public class TagController extends BaseController {
     @DeleteMapping("/deselectTagToTask")
     public AjaxResult removeTagToTask(@RequestBody TaskTagsParam taskTagsParam) {
         return toAjax(tagService.delTagToTask(taskTagsParam));
+    }
+
+    @GetMapping("/taskTags/list")
+    public AjaxResult taskTagsList(@RequestParam Long taskId) {
+        List<TaskTags> taskTagsList = tagService.selectTaskTagsList(taskId);
+
+        return success(taskTagsList);
     }
 }

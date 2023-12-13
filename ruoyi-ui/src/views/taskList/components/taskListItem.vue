@@ -54,9 +54,7 @@
 
     <el-button class="add-list-button" @click="addTask">+ 添加事项</el-button>
 
-    <tag-dialog :tag-dialog-visible="tagDialogVisible" :task="currentTask"
-                @tagConfirm="tagDialogVisible=false"
-                @tagCancel="tagDialogVisible=false"></tag-dialog>
+    <tag-dialog v-model="tagDialogVisible" :task="currentTask"></tag-dialog>
   </div>
 </template>
 

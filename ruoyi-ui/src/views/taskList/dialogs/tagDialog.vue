@@ -1,22 +1,20 @@
 <template>
   <el-dialog
     title="请选择标签"
-    :visible.sync="tagDialogVisible"
+    :visible.sync="dialogVisible"
     width="30%"
     center
-    :show-close="false"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
+    :before-close="handleClose"
   >
     <el-row>
       <el-tag
+        :effect="tagEffect(tag.tagId)"
         class="user-select-none"
-        :key="tag.vKey"
+        :key="tag.tagId"
         v-for="tag in dynamicTags"
         closable
         @close="handleCloseTag(tag)"
         @click="handleSelectOrCancelTag(tag)"
-        :class="{selected: isSelected(tag.vKey)}"
       >{{ tag.tagName }}
       </el-tag>
       <el-input
@@ -29,22 +27,17 @@
       ></el-input>
       <el-button v-else class="button-new-tag" @click="showInput">+ 新标签</el-button>
     </el-row>
-
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="handleConfirm">确认</el-button>
-      <el-button @click="handleClose">取消</el-button>
-    </div>
   </el-dialog>
 </template>
 
 <script>
-import {addTags, delTag, deselectTagToTask, listTags, selectTagToTask} from "../../../api/taskList/tag";
+import {addTags, delTag, deselectTagToTask, listTags, listTaskTags, selectTagToTask} from "../../../api/taskList/tag";
 import {v4 as uuidv4} from 'uuid';
 
 export default {
   name: 'TagDialog',
   props: {
-    tagDialogVisible: {
+    value: {
       type: Boolean,
       default: false
     },
@@ -55,6 +48,7 @@ export default {
 
   data() {
     return {
+      dialogVisible: false,
       dynamicTags: [],
       inputVisible: false,
       inputValue: '',
@@ -68,10 +62,28 @@ export default {
     this.getTagList();
   },
 
+  computed: {
+    tagEffect() {
+      return (tagId) => {
+        if(this.isSelected(tagId)) {
+          return 'dark';
+        }else  {
+          return 'plain'
+        }
+      }
+    },
+  },
+
+  watch: {
+    value(val) {
+      this.dialogVisible = val;
+    }
+  },
+
   methods: {
     getTagList() {
       listTags().then(res => {
-        this.dynamicTags = res.data.map(item => ({vKey: item.tagId, tagId: item.tagId, tagName: item.tagName}));
+        this.dynamicTags = res.data.map(item => ({tagId: item.tagId, tagName: item.tagName}));
       })
     },
     showInput() {
@@ -96,8 +108,10 @@ export default {
             vKey: this.generateUniqueId(),
             tagName: inputValue
           }
-          this.dynamicTags.push(newTag);
-          this.tempTags.push(newTag);
+          addTags([newTag]).then(res => {
+            this.$modal.msgSuccess("新增标签成功");
+            this.getTagList();
+          })
         }
       }
 
@@ -110,78 +124,53 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        // 要close的tag在临时tempTags里面
-        const tempIndex = this.tempTags.findIndex(tempTag => tempTag.vKey === tag.vKey);
-        if (tempIndex !== -1) {
-          this.tempTags.splice(tempIndex, 1);
-          const dynamicIndex = this.dynamicTags.findIndex(dynamicTag => dynamicTag.vKey === tag.vKey);
-          this.dynamicTags.splice(dynamicIndex, 1);
-        } else {
-          // 要close的tag在数据库里面
-          delTag(tag.tagId).then(res => {
-            this.$modal.msgSuccess("标签删除成功");
-            this.getTagList();
-          })
-        }
+        // 要close的tag在数据库里面
+        delTag(tag.tagId).then(res => {
+          this.$modal.msgSuccess("标签删除成功");
+          this.getTagList();
+        })
       }).catch(() => {
       })
     },
-    isSelected(tagVKey) {
-      const tagIds = this.task.tags.map(tag => tag.tagId);
-      return tagIds.includes(tagVKey) || this.tempSelectTagIds.includes(tagVKey);
+    isSelected(tagId) {
+      if (this.task.tags !== undefined) {
+        const tagIds = this.task.tags.map(tag => tag.tagId);
+
+        return tagIds.includes(tagId);
+      }
     },
     handleSelectOrCancelTag(tag) {
-      if (this.isSelected(tag.vKey)) {
-        this.deselectTag(tag.vKey);
+      if (this.isSelected(tag.tagId)) {
+        this.deselectTag(tag.tagId);
       } else {
-        this.selectTag(tag.vKey);
+        this.selectTag(tag.tagId);
       }
     },
-    selectTag(tagVKey) {
-      const tagIds = this.task.tags.map(tag => tag.tagId);
-      if (!tagIds.includes(tagVKey) && !this.tempSelectTagIds.includes(tagVKey)) {
-        this.tempSelectTagIds.push(tagVKey);
-      }
+    getNewTaskTagsList() {
+      listTaskTags({taskId: this.task.taskId}).then(res => {
+        this.task.tags = res.data.map(tag => {
+          return {tagId: tag.tagId, tagName: tag.tagData.tagName};
+        })
+      })
     },
-    deselectTag(tagVKey) {
-      // 取消选择的tag在临时tempSelectTagIds里面
-      const index = this.tempSelectTagIds.indexOf(tagVKey);
-      if (index !== -1) {
-        this.tempSelectTagIds.splice(index, 1);
-      } else {
-        // 取消选择的tag在数据库里面
-        const tagIds = this.task.tags.map(tag => tag.tagId);
-        if (tagIds.includes(tagVKey)) {
-          this.tempDeselectTagIds.push(tagVKey);
-        }
-      }
+    selectTag(tagId) {
+      selectTagToTask(this.task.taskId, [tagId]).then(res => {
+        this.$modal.msgSuccess("选择标签成功");
+        this.getNewTaskTagsList();
+      })
     },
-    handleConfirm() {
-      if (this.tempTags.length > 0) {
-        addTags(this.tempTags).then(() => {
-          this.$modal.msgSuccess("新增标签成功");
-        })
-
-
-      }
-
-      if (this.tempSelectTagIds.length > 0) {
-        selectTagToTask(this.task.taskId, this.tempSelectTagIds).then(res => {
-          this.$modal.msgSuccess("选择标签成功")
-        })
-      }
-
-      if (this.tempDeselectTagIds.length > 0) {
-        deselectTagToTask(this.task.taskId, this.tempDeselectTagIds).then(res => {
-          this.$modal.msgSuccess("取消选择标签成功")
-        })
-      }
-
-      this.$emit("tagConfirm")
+    deselectTag(tagId) {
+      deselectTagToTask(this.task.taskId, [tagId]).then(res => {
+        this.$modal.msgSuccess("取消选择标签成功");
+        this.getNewTaskTagsList();
+      })
     },
     handleClose() {
-      this.$emit("tagCancel")
-    },
+      this.dialogVisible = false;
+      this.$emit("input", this.dialogVisible);
+
+      this.$parent.getToDoList();
+    }
   },
 }
 </script>
@@ -203,4 +192,11 @@ export default {
   margin-left: 10px;
   margin-bottom: 10px;
 }
+
+.el-tag {
+  margin-left: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
 </style>
