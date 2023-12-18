@@ -66,7 +66,7 @@ export default {
 
   props: {
     customResult: {
-      Object
+      type: Object,
     },
   },
 

@@ -58,7 +58,7 @@
       <el-col :span="12"><span>{{ formattedTimeDiff }}</span></el-col>
     </el-row>
 
-    <div class="spend-time-grid mb24">
+    <div class="spend-time-grid mb20">
       <el-button
         v-for="t in timeSpentOptions"
         :key="t"
