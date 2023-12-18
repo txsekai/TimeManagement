@@ -39,8 +39,8 @@ public class TaskListController extends BaseController {
         return toAjax(taskListService.updateTaskName(taskList));
     }
 
-    @DeleteMapping("/{taskIds}")
-    public AjaxResult remove(@PathVariable Long[] taskIds) {
-        return toAjax(taskListService.deleteTaskByIds(taskIds));
+    @DeleteMapping("/{taskId}")
+    public AjaxResult remove(@PathVariable Long taskId) {
+        return toAjax(taskListService.deleteTaskById(taskId));
     }
 }

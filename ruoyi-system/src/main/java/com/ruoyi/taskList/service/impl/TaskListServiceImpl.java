@@ -39,7 +39,7 @@ public class TaskListServiceImpl implements ITaskListService {
 
     @Override
     @Transactional
-    public int deleteTaskByIds(Long[] taskIds) {
-        return taskListMapper.deleteTaskByIds(taskIds);
+    public int deleteTaskById(Long taskId) {
+        return taskListMapper.deleteTaskById(taskId);
     }
 }

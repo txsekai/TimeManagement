@@ -46,6 +46,14 @@
                   @click="openTagDialog(task)"
                 ></el-button>
               </el-tooltip>
+
+              <el-tooltip content="日期, 时间" placement="bottom-start">
+                <el-button
+                  class="setting-icon"
+                  icon="el-icon-time"
+                  @click="openDateAndTimeDialog(task)"
+                ></el-button>
+              </el-tooltip>
             </el-row>
           </div>
         </div>
@@ -55,6 +63,8 @@
     <el-button class="add-list-button" @click="addTask">+ 添加事项</el-button>
 
     <tag-dialog v-model="tagDialogVisible" :task="currentTask"></tag-dialog>
+
+    <date-and-time-dialog v-model="dateAndTimeDialogVisible" :task="currentTask"></date-and-time-dialog>
   </div>
 </template>
 
@@ -65,10 +75,11 @@ import FormatList from "../mixins/formatList";
 import {addTask, delTask, listToDoTask, updateTaskName} from "../../../api/taskList/taskList";
 import TaskStatusItem from "./taskStatusItem.vue";
 import TagDialog from "../dialogs/tagDialog.vue";
+import DateAndTimeDialog from "../dialogs/dateAndTimeDialog.vue";
 
 export default {
   name: 'TaskListItem',
-  components: {TagDialog, TaskStatusItem},
+  components: {DateAndTimeDialog, TagDialog, TaskStatusItem},
   mixins: [DateMixin, RepeatMixin, FormatList],
 
   props: {
@@ -87,6 +98,7 @@ export default {
       taskInputs: [],
 
       tagDialogVisible: false,
+      dateAndTimeDialogVisible: false,
     }
   },
 
@@ -128,11 +140,15 @@ export default {
           cancelButtonText: "取消",
           type: "warning"
         }).then(() => {
-          delTask(task.taskId).then(() => {
-            this.$modal.msgSuccess("删除任务成功");
+          if (task.taskId !== undefined) {
+            delTask(task.taskId).then(() => {
+              this.$modal.msgSuccess("删除任务成功");
+              this.getToDoList();
+            }).catch(() => {
+            })
+          } else {
             this.getToDoList();
-          }).catch(() => {
-          })
+          }
         }).catch(() => {
           this.getToDoList();
         })
@@ -176,10 +192,6 @@ export default {
         lastInputElement.$refs.input.focus();
       })
     },
-    openTagDialog(task) {
-      this.currentTask = task;
-      this.tagDialogVisible = true;
-    },
     handleOutsideClick(event) {
       let point = event.target;
       if (!point.classList.contains('circle-button')) {
@@ -198,6 +210,14 @@ export default {
           item.hideDropdown();
         })
       }
+    },
+    openTagDialog(task) {
+      this.currentTask = task;
+      this.tagDialogVisible = true;
+    },
+    openDateAndTimeDialog(task) {
+      this.dateAndTimeDialogVisible = true;
+      this.currentTask = task;
     },
   },
 

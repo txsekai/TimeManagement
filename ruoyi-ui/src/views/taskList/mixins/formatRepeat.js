@@ -47,27 +47,27 @@ const RepeatMixin = {
     formattedRepeatResult(repeat) {
       let formattedRepeat = '';
 
-      if(repeat.repeatValue !== null) {
-        formattedRepeat = `重复：${this.getRepeatValueLabel(repeat.repeatValue)}`;
+        if (repeat.repeatValue !== null) {
+          formattedRepeat = `重复：${this.getRepeatValueLabel(repeat.repeatValue)}`;
 
-        if(repeat.endRepeat !== null) {
-          formattedRepeat = formattedRepeat + ` 结束重复： ${this.getRepeatValueLabel(repeat.endRepeat)}`;
+          if (repeat.endRepeat !== null) {
+            formattedRepeat = formattedRepeat + ` 结束重复： ${this.getRepeatValueLabel(repeat.endRepeat)}`;
 
-          if(repeat.endRepeat == REPEAT_SELECT.ENDREPEATSELECTEDDATE) {
-            formattedRepeat = `重复：${this.getRepeatValueLabel(repeat.repeatValue)} 结束重复： ${this.formatDate(repeat.endRepeatDate)}`;
+            if (repeat.endRepeat == REPEAT_SELECT.ENDREPEATSELECTEDDATE) {
+              formattedRepeat = `重复：${this.getRepeatValueLabel(repeat.repeatValue)} 结束重复： ${this.formatDate(repeat.endRepeatDate)}`;
+            }
+          }
+
+          if (repeat.customResult.num !== null && repeat.customResult.num !== undefined) {
+            formattedRepeat = formattedRepeat +
+              `<br>每${repeat.customResult.num}` +
+              `${repeat.customResult.frequencyValue == REPEAT_SELECT.MONTH ? '个' : ''}` +
+              `${this.getRepeatValueLabel(repeat.customResult.frequencyValue)}` +
+              `${this.formatSelectedRepeatOption(repeat.customResult.frequencyValue, repeat.customResult.selectedItem)}重复`;
           }
         }
 
-        if(repeat.customResult.num !== null && repeat.customResult.num !== undefined) {
-          formattedRepeat = formattedRepeat +
-            `<br>每${repeat.customResult.num}`+
-            `${repeat.customResult.frequencyValue == REPEAT_SELECT.MONTH ? '个' : ''}`+
-            `${this.getRepeatValueLabel(repeat.customResult.frequencyValue)}`+
-            `${this.formatSelectedRepeatOption(repeat.customResult.frequencyValue, repeat.customResult.selectedItem)}重复`;
-        }
-      }
-
-      return repeat.repeatValue == null ? '' : formattedRepeat;
+        return repeat.repeatValue == null ? '' : formattedRepeat;
     }
   },
 }

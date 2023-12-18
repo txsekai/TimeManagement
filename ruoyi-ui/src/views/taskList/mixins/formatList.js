@@ -1,5 +1,3 @@
-import {listToDoTask} from "../../../api/taskList/taskList";
-
 const FormatList = {
   methods: {
     formattedToDoList(todoList) {
@@ -22,7 +20,7 @@ const FormatList = {
             row.repeat.customResult = {
               num: row.repeat.num,
               frequencyValue: row.repeat.frequencyValue,
-              selectedItem: row.repeat.selectedItem
+              selectedItem: row.repeat.selectedItem.split(',').map(Number)
             };
           }else {
             row.repeat.customResult = {};

@@ -14,5 +14,5 @@ public interface ITaskListService {
 
     public int updateTaskName(TaskList taskList);
 
-    public int deleteTaskByIds(Long[] taskIds);
+    public int deleteTaskById(Long taskIds);
 }

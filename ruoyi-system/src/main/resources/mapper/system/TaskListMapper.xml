@@ -105,12 +105,9 @@
         update task_list set task_name = #{taskName} where task_id = #{taskId}
     </update>
 
-    <delete id="deleteTaskByIds" parameterType="Long">
+    <delete id="deleteTaskById" parameterType="Long">
         delete
         from task_list
-        where task_id in
-        <foreach collection="array" item="taskId" open="(" separator="," close=")">
-            #{taskId}
-        </foreach>
+        where task_id = #{taskId}
     </delete>
 </mapper>
