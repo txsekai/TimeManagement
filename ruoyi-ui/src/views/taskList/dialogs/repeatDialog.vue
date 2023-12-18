@@ -129,13 +129,13 @@ export default {
     },
     repeatValue(newVal) {
       if(newVal === REPEAT_SELECT.CUSTOM) {
-        this.endRepeat = REPEAT_SELECT.NEVER;
         this.endRepeatVisible = true;
-        this.customResult = {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
+        this.endRepeat = this.endRepeat !== null ? this.endRepeat : REPEAT_SELECT.NEVER;
+        this.customResult = Object.keys(this.customResult).length !== 0 ? this.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
       }else {
-        this.endRepeatVisible = newVal !== REPEAT_SELECT.NEVER;
-        this.customResult = {num: null, frequencyValue: null, selectedItem: null};
-        this.endRepeat = REPEAT_SELECT.NEVER;
+        this.endRepeatVisible = newVal !== REPEAT_SELECT.NEVER
+        this.endRepeat = this.endRepeat !== null ? this.endRepeat : REPEAT_SELECT.NEVER;
+        this.customResult = Object.keys(this.customResult).length !== 0 ? this.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
         if(newVal === REPEAT_SELECT.NEVER) {
           this.endRepeat = null;
         }
@@ -144,11 +144,7 @@ export default {
     endRepeat(newVal) {
       if(newVal === REPEAT_SELECT.ENDREPEATSELECTEDDATE) {
         this.endDateVisible = true;
-
-        const defaultRepeatDate = new Date();
-        defaultRepeatDate.setDate(defaultRepeatDate.getDate() + 7);
-        defaultRepeatDate.setHours(23,59,59,999);
-        this.endRepeatDate = defaultRepeatDate;
+        this.endRepeatDate = this.defaultRepeatDate();;
       }else {
         this.endDateVisible = false;
         this.endRepeatDate = null;
@@ -164,12 +160,25 @@ export default {
 
   methods: {
     convertLabel,
+    defaultRepeatDate() {
+      const defaultRepeatDate = new Date();
+      defaultRepeatDate.setDate(defaultRepeatDate.getDate() + 7);
+      defaultRepeatDate.setHours(23,59,59,999);
+      return defaultRepeatDate;
+    },
     initLocalVariables(value) {
       if(value !== null) {
+        // 数据库有repeat
         this.repeatValue = value.repeatValue !== null ? value.repeatValue : REPEAT_SELECT.NEVER;
         this.endRepeat = value.endRepeat !== null ? value.endRepeat : REPEAT_SELECT.NEVER;
-        this.endRepeatDate = value.endRepeatDate !== null ? value.endRepeatDate : new Date();
-        this.customResult = value.customResult !== null ? value.customResult : {};
+        this.endRepeatDate = value.endRepeatDate !== null ? value.endRepeatDate : this.defaultRepeatDate();
+        this.customResult = Object.keys(value.customResult).length !== 0 ? value.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
+      }else {
+        // 新增数据
+        this.repeatValue = REPEAT_SELECT.NEVER;
+        this.endRepeat = REPEAT_SELECT.NEVER;
+        this.endRepeatDate = this.defaultRepeatDate();
+        this.customResult = {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
       }
     },
     handleClose() {
