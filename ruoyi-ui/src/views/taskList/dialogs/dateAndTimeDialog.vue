@@ -1,10 +1,12 @@
 <template>
   <el-dialog
     title="请设置日期, 时间"
-    :visible.sync="dialogVisible"
+    :visible.sync="dateAndTimeDialogVisible"
     width="30%"
     center
-    :before-close="handleClose"
+    :show-close="false"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
   >
     <el-row class="mb20">
       <!--  开始日期和开始时间    -->
@@ -77,13 +79,20 @@
       <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(repeat)"></el-row>
     </el-row>
 
-    <div slot="footer">
+    <div slot="footer" class="dialog-footer">
       <el-button v-show="showDateDeleteButton"
-                 @click="handleDateDelete"
-      >删除日程</el-button>
+                 @click="handleDateDelete">删除日程
+      </el-button>
+      <el-button @click="handleDateConfirm">确认</el-button>
+      <el-button @click="handleDateCancel">取消</el-button>
     </div>
 
-    <repeat-dialog v-model="repeatDialogVisible" :title="repeatDialogTitle" :repeat="repeat"></repeat-dialog>
+    <repeat-dialog :repeat-dialog-visible="repeatDialogVisible"
+                   :title="repeatDialogTitle"
+                   :repeat-result="repeat"
+                   @repeatConfirm="handleRepeatConfirm"
+                   @repeatCancel="repeatDialogVisible=false"
+    ></repeat-dialog>
   </el-dialog>
 </template>
 
@@ -100,7 +109,7 @@ export default {
   mixins: [DateMixin, RepeatMixin],
 
   props: {
-    value: {
+    dateAndTimeDialogVisible: {
       type: Boolean,
       default: false
     },
@@ -111,8 +120,6 @@ export default {
 
   data() {
     return {
-      dialogVisible: false,
-
       completedDateVisible: false,
       startTimeVisible: false,
       completedTimeVisible: false,
@@ -151,9 +158,6 @@ export default {
   },
 
   watch: {
-    value(val) {
-      this.dialogVisible = val;
-    },
     task: {
       handler(newTask) {
         if (newTask.dateAndTime.startTime == null) {
@@ -220,44 +224,44 @@ export default {
       }
     },
     completedDateVisible(newVal) {
-      if(newVal) {
-        if(!this.completedTimeVisible) {
+      if (newVal) {
+        if (!this.completedTimeVisible) {
           let copy = new Date(this.startTime);
-          this.completedTime = new Date(copy.setHours(23,59,59,999));
-        }else {
+          this.completedTime = new Date(copy.setHours(23, 59, 59, 999));
+        } else {
           let copy = new Date(this.completedTime);
           this.$set(this, 'completedTime', new Date(this.startTime.getFullYear(), this.startTime.getMonth(), this.startTime.getDate(), copy.getHours(), copy.getMinutes()));
         }
-      }else {
-        if(this.completedTimeVisible) {
+      } else {
+        if (this.completedTimeVisible) {
           let copy = new Date(this.completedTime);
           this.$set(this, 'completedTime', new Date(this.startTime.getFullYear(), this.startTime.getMonth(), this.startTime.getDate(), copy.getHours(), copy.getMinutes()));
-        }else {
+        } else {
           this.completedTime = null;
         }
       }
     },
     completedTimeVisible(newVal) {
-      if(newVal) {
-        if(this.completedDateVisible) {
+      if (newVal) {
+        if (this.completedDateVisible) {
           let copy = new Date(this.completedTime);
-          if(this.startTimeVisible) {
+          if (this.startTimeVisible) {
             copy.setHours(this.startTime.getHours(), this.startTime.getMinutes(), 0, 0);
-          }else {
+          } else {
             const current = new Date();
             copy.setHours(current.getHours(), current.getMinutes(), 0, 0);
           }
           this.$set(this, 'completedTime', new Date(copy.getTime() + 30 * 60000));
-        }else {
-          if(this.startTimeVisible) {
+        } else {
+          if (this.startTimeVisible) {
             this.$set(this, 'completedTime', new Date(this.startTime.getTime() + 30 * 60000))
-          }else {
+          } else {
             const current = new Date()
             this.$set(this, 'completedTime', new Date(current.getTime() + 30 * 60000))
           }
         }
         this.startTimeVisible = true;
-      }else {
+      } else {
         if (this.completedDateVisible) {
           let copy = new Date(this.completedTime)
           this.completedTime = new Date(copy.setHours(23, 59, 59, 999))
@@ -278,22 +282,22 @@ export default {
       const hourDiff = Math.floor((temp % 1440) / 60);
       const minDiff = temp % 60;
 
-      if(temp <= 120) {
+      if (temp <= 120) {
         return '';
-      }else if(temp < 1440) {
-        if(minDiff === 0) {
+      } else if (temp < 1440) {
+        if (minDiff === 0) {
           return `${hourDiff}小时`;
-        }else {
+        } else {
           return `${hourDiff}小时${minDiff}分钟`;
         }
-      }else {
-        if(hourDiff === 0) {
-          if(minDiff === 0) {
+      } else {
+        if (hourDiff === 0) {
+          if (minDiff === 0) {
             return `${dayDiff}天`;
-          }else {
+          } else {
             return `${dayDiff}天${minDiff}分钟`;
           }
-        }else {
+        } else {
           if (minDiff === 0) {
             return `${dayDiff}天${hourDiff}小时`;
           } else {
@@ -306,13 +310,13 @@ export default {
       return !this.completedTimeVisible;
     },
     showDateDeleteButton() {
-      if(this.task.dateAndTime !== undefined) {
+      if (this.task.dateAndTime !== undefined) {
         return this.task.dateAndTime.startTime !== null;
       }
     },
     repeatDialogTitle() {
-      if(this.validateTime()) {
-        if(this.completedDateVisible || this.completedTimeVisible) {
+      if (this.validateTime()) {
+        if (this.completedDateVisible || this.completedTimeVisible) {
           return `开始: ${this.formatDate(this.startTime)} ~ 完成: ${this.formatDate(this.completedTime)}`;
         }
         return `开始: ${this.formatDate(this.startTime)}`;
@@ -323,42 +327,42 @@ export default {
 
   methods: {
     validateTime() {
-      if(this.timeDiff < 0 || (this.completedTime !== null && this.completedTime < this.startTime)) {
+      if (this.timeDiff < 0 || (this.completedTime !== null && this.completedTime < this.startTime)) {
         this.$message({
           message: '完成时间需大于开始时间',
           type: "warning"
         })
         return false;
-      }else {
+      } else {
         return true;
       }
     },
     handlePlanTime(plan) {
       this.$set(this, 'completedTime', new Date(this.startTime.getTime() + plan * 60000));
     },
-    handleClose() {
-      if(this.validateTime()) {
-        this.$confirm("确认为该任务添加日期, 时间吗?", "确认", {
-          confirmButtonText: "确认",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(() => {
-
-        }).catch(() => {
-          this.dialogVisible = false;
-          this.$emit('input', this.dialogVisible);
-        })
-
+    handleRepeatConfirm(repeat) {
+      this.repeatDialogVisible = false;
+      this.labelFormatHolder.selectedRepeatList = repeat.customResult.selectedItem;
+      this.labelFormatHolder.frequencyValue = repeat.customResult.frequencyValue;
+      this.repeat = repeat;
+    },
+    handleDateConfirm() {
+      if (this.validateTime()) {
+        // this.task.dateAndTime.startTime = this.startTime;
+        // this.task.dateAndTime.completedTime = this.completedTimeVisible || this.completedDateVisible ? this.completedTime : null;
+        // this.task.repeat = JSON.parse(JSON.stringify(this.repeat));
 
 
-        this.task.dateAndTime.startTime = this.startTime;
-        this.task.dateAndTime.completedTime = this.completedTimeVisible || this.completedDateVisible ? this.completedTime : null;
+        this.$emit("dateConfirm");
       }
     },
+    handleDateCancel() {
+      this.$emit("dateCancel");
+    },
     handleOpenRepeatDialog() {
-      if(this.validateTime()) {
+      if (this.validateTime()) {
         this.repeatDialogVisible = true;
-      }else {
+      } else {
         this.repeatDialogVisible = false;
       }
     },

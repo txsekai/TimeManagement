@@ -11,6 +11,7 @@
         <result property="taskStartTime" column="task_start_time"/>
         <result property="taskCompletedTime" column="task_completed_time"/>
         <result property="taskRepeatId" column="task_repeat_id"/>
+        <result property="endRepeatDate" column="end_repeat_date"/>
         <result property="taskPriority" column="task_priority"/>
         <result property="createBy"   column="create_by"   />
         <result property="createTime" column="create_time" />
@@ -50,6 +51,7 @@
             tl.task_start_time,
             tl.task_completed_time,
             tl.task_repeat_id,
+            tl.end_repeat_date,
             tl.task_priority,
 
             t.tag_id,

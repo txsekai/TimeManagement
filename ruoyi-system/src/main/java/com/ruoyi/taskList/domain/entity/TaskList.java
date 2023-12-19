@@ -22,6 +22,8 @@ public class TaskList extends BaseEntity {
 
     private Long taskRepeatId;
 
+    private LocalDateTime endRepeatDate;
+
     private String taskPriority;
 
     private Long userId;
@@ -39,6 +41,7 @@ public class TaskList extends BaseEntity {
                 .append("taskStartTime", getTaskStartTime())
                 .append("taskCompletedTime", getTaskCompletedTime())
                 .append("taskRepeatId", getTaskRepeatId())
+                .append("endRepeatDate", getEndRepeatDate())
                 .append("taskPriority", getTaskPriority())
                 .append("userId", getUserId())
                 .append("repeat", getRepeat())

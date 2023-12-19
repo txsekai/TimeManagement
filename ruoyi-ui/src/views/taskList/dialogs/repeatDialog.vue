@@ -1,11 +1,13 @@
 <template>
   <el-dialog
     :title="title"
-    :visible.sync="dialogVisible"
+    :visible.sync="repeatDialogVisible"
     width="30%"
     center
     append-to-body
-    :before-close="handleClose"
+    :show-close="false"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
   >
     <el-row class="mb8">
         <span style="display: inline-block;padding-right: 28px;margin-right: 10px">重复</span>
@@ -52,6 +54,11 @@
 
     <custom-repeat-item v-if="repeatValue===REPEAT_SELECT.CUSTOM"
                         :custom-result="customResult"></custom-repeat-item>
+
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="handleRepeatConfirm">确认</el-button>
+      <el-button @click="handleRepeatCancel">取消</el-button>
+    </div>
   </el-dialog>
 </template>
 
@@ -68,18 +75,17 @@ export default {
       type: String,
       default: '请设置重复'
     },
-    value: {
+    repeatDialogVisible: {
       type: Boolean,
       default: false
     },
-    repeat: {
+    repeatResult: {
       type: Object,
     }
   },
 
   data() {
     return {
-      dialogVisible: false,
       repeatValue: REPEAT_SELECT.NEVER,
       repeatOptions: [{
         value: REPEAT_SELECT.NEVER,
@@ -110,22 +116,20 @@ export default {
       endRepeatDate: null,
 
       customResult: {num: null, frequencyValue: null, selectedItem: null},
+      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}}
     }
   },
 
   created() {
-    this.initLocalVariables(this.repeat);
+    this.repeat = this.repeatResult;
+    this.initLocalVariables(this.repeatResult);
   },
 
   watch: {
-    value(val) {
-      this.dialogVisible = val;
-    },
-    repeat: {
-      handler(newVal) {
-        this.initLocalVariables(newVal);
-      },
-      deep: true
+    repeatResult(val) {
+      this.repeat = val
+
+      this.initLocalVariables(val)
     },
     repeatValue(newVal) {
       if(newVal === REPEAT_SELECT.CUSTOM) {
@@ -181,9 +185,14 @@ export default {
         this.customResult = {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
       }
     },
-    handleClose() {
-      this.dialogVisible = false;
-      this.$emit('input', this.dialogVisible);
+    handleRepeatConfirm() {
+      const {repeatValue, endRepeat, endRepeatDate, customResult} = this
+      this.repeat = {repeatValue, endRepeat, endRepeatDate, customResult}
+      this.$emit("repeatConfirm", this.repeat);
+      console.log(this.repeat)
+    },
+    handleRepeatCancel() {
+      this.$emit("repeatCancel");
     }
   },
 }

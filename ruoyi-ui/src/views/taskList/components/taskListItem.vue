@@ -64,7 +64,10 @@
 
     <tag-dialog v-model="tagDialogVisible" :task="currentTask"></tag-dialog>
 
-    <date-and-time-dialog v-model="dateAndTimeDialogVisible" :task="currentTask"></date-and-time-dialog>
+    <date-and-time-dialog :date-and-time-dialog-visible="dateAndTimeDialogVisible"
+                          :task="currentTask"
+                          @dateConfirm="dateAndTimeDialogVisible=false"
+                          @dateCancel="dateAndTimeDialogVisible=false"></date-and-time-dialog>
   </div>
 </template>
 
@@ -160,6 +163,7 @@ export default {
             })
           }
           task.editing = false;
+          // bug 新增任务然后打卡dateAndTime dialog, 然后关闭, 页面上没有新增的这条任务,要刷新
           this.getToDoList();
         }, 300)
       }
@@ -212,8 +216,8 @@ export default {
       }
     },
     openTagDialog(task) {
-      this.currentTask = task;
       this.tagDialogVisible = true;
+      this.currentTask = task;
     },
     openDateAndTimeDialog(task) {
       this.dateAndTimeDialogVisible = true;
