@@ -17,11 +17,11 @@
               </el-tag>
             </el-row>
 
-            <el-row v-if="task.dateAndTime.startTime">
-              <span>开始：{{ formatDate(task.dateAndTime.startTime) }}</span>
-              <span v-if="task.dateAndTime.completedTime"> ~ </span>
-              <span v-if="task.dateAndTime.completedTime">完成：{{
-                  formatDate(task.dateAndTime.completedTime)
+            <el-row v-if="task.taskStartTime">
+              <span>开始：{{ formatDate(task.taskStartTime) }}</span>
+              <span v-if="task.taskCompletedTime"> ~ </span>
+              <span v-if="task.taskCompletedTime">完成：{{
+                  formatDate(task.taskCompletedTime)
                 }}</span>
             </el-row>
             <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(task.repeat)"></el-row>
@@ -182,7 +182,8 @@ export default {
         taskName: '',
         editing: true,
         tags: [],
-        dateAndTime: {startTime: null, completedTime: null},
+        taskStartTime: null,
+        taskCompletedTime: null,
         taskPriority: '',
         repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}}
       }

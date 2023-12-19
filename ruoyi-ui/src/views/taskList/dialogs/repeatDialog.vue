@@ -148,7 +148,7 @@ export default {
     endRepeat(newVal) {
       if(newVal === REPEAT_SELECT.ENDREPEATSELECTEDDATE) {
         this.endDateVisible = true;
-        this.endRepeatDate = this.defaultRepeatDate();;
+        this.endRepeatDate = this.defaultRepeatDate();
       }else {
         this.endDateVisible = false;
         this.endRepeatDate = null;

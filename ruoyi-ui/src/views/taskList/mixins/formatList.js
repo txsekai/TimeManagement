@@ -3,10 +3,11 @@ const FormatList = {
     formattedToDoList(todoList) {
       for (let row of todoList) {
         row.initialTaskName = row.taskName;
-        if(row.taskStartTime !== null && row.taskCompletedTime !== null) {
-          row.dateAndTime = {startTime: new Date(row.taskStartTime), completedTime: new Date(row.taskCompletedTime)};
-        }else {
-          row.dateAndTime = {startTime: null, completedTime: null};
+        if(row.taskStartTime !== null) {
+          row.taskStartTime = new Date(row.taskStartTime);
+        }
+        if(row.taskCompletedTime !== null) {
+          row.taskCompletedTime = new Date(row.taskCompletedTime);
         }
 
         if (row.tags.length > 0) {
@@ -29,7 +30,7 @@ const FormatList = {
           row.repeat = {
             repeatValue: row.repeat.repeatValue,
             endRepeat: row.repeat.endRepeat,
-            endRepeatDate: row.repeat.endRepeatDate,
+            endRepeatDate: new Date(row.repeat.endRepeatDate),
             customResult: row.repeat.customResult
           };
         }
