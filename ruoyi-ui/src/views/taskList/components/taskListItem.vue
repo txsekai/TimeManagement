@@ -183,6 +183,7 @@ export default {
       });
     },
     inputBlur(task) {
+      task.taskName = task.taskName.trim();
       if (task.taskName === '') {
         if (task.taskRepeatId == null) {
           this.$confirm("确认要删除该任务吗?", "确认", {
@@ -233,6 +234,7 @@ export default {
       }
     },
     taskNameInputChange(task) {
+      task.taskName = task.taskName.trim();
       if (task.taskId !== undefined && task.taskName !== '') {
         /* 判断该任务是否是重复任务
         如果是重复任务, 提示仅更新当前日程还是所有日程
