@@ -11,7 +11,6 @@
         <result property="taskStartTime" column="task_start_time"/>
         <result property="taskCompletedTime" column="task_completed_time"/>
         <result property="taskRepeatId" column="task_repeat_id"/>
-        <result property="endRepeatDate" column="end_repeat_date"/>
         <result property="taskPriority" column="task_priority"/>
         <result property="createBy"   column="create_by"   />
         <result property="createTime" column="create_time" />
@@ -51,7 +50,6 @@
             tl.task_start_time,
             tl.task_completed_time,
             tl.task_repeat_id,
-            tl.end_repeat_date,
             tl.task_priority,
 
             t.tag_id,
@@ -62,7 +60,6 @@
             tr.end_repeat_date,
             tr.num,
             tr.frequency_value,
-
             tr.selected_item
         from task_list tl
                  left join task_tags tt on tl.task_id = tt.task_id
@@ -100,11 +97,11 @@
     </insert>
 
     <update id="updateTaskStatus" parameterType="TaskList">
-        update task_list set task_status = #{taskStatus} where task_id = #{taskId}
+        update task_list set task_status = #{taskStatus},update_time = sysdate() where task_id = #{taskId}
     </update>
 
     <update id="updateTaskName" parameterType="TaskList">
-        update task_list set task_name = #{taskName} where task_id = #{taskId}
+        update task_list set task_name = #{taskName}, update_time = sysdate() where task_id = #{taskId}
     </update>
 
     <delete id="deleteTaskById" parameterType="Long">

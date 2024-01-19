@@ -1,14 +1,14 @@
 package com.ruoyi.taskList.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.taskList.domain.entity.TaskList;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-public interface TaskListMapper {
+public interface TaskListMapper extends BaseMapper<TaskList> {
     public List<TaskList> selectToDoList(TaskListQueryParam taskListQueryParam);
-
-    public int insertTaskList(TaskList taskList);
 
     public int updateTaskStatus(TaskList taskList);
 

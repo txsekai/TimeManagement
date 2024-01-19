@@ -116,30 +116,34 @@ export default {
       endRepeatDate: null,
 
       customResult: {num: null, frequencyValue: null, selectedItem: null},
-      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}}
+      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}},
+      repeatBK: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}},
     }
   },
 
   created() {
     this.repeat = this.repeatResult;
+    this.repeatBK = this.repeatResult;
+
     this.initLocalVariables(this.repeatResult);
   },
 
   watch: {
     repeatResult(val) {
-      this.repeat = val
+      this.repeat = val;
+      this.repeatBK = val;
 
-      this.initLocalVariables(val)
+      this.initLocalVariables(val);
     },
     repeatValue(newVal) {
       if(newVal === REPEAT_SELECT.CUSTOM) {
         this.endRepeatVisible = true;
         this.endRepeat = this.endRepeat !== null ? this.endRepeat : REPEAT_SELECT.NEVER;
-        this.customResult = Object.keys(this.customResult).length !== 0 ? this.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
+        this.customResult = this.customResult.num !== null ? this.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
       }else {
         this.endRepeatVisible = newVal !== REPEAT_SELECT.NEVER
         this.endRepeat = this.endRepeat !== null ? this.endRepeat : REPEAT_SELECT.NEVER;
-        this.customResult = Object.keys(this.customResult).length !== 0 ? this.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
+        this.customResult = {num: null, frequencyValue: null, selectedItem: null};
         if(newVal === REPEAT_SELECT.NEVER) {
           this.endRepeat = null;
         }
@@ -148,7 +152,7 @@ export default {
     endRepeat(newVal) {
       if(newVal === REPEAT_SELECT.ENDREPEATSELECTEDDATE) {
         this.endDateVisible = true;
-        this.endRepeatDate = this.defaultRepeatDate();
+        this.endRepeatDate = this.endRepeatDate !== null ? this.endRepeatDate : this.defaultRepeatDate();
       }else {
         this.endDateVisible = false;
         this.endRepeatDate = null;
@@ -176,22 +180,19 @@ export default {
         this.repeatValue = value.repeatValue !== null ? value.repeatValue : REPEAT_SELECT.NEVER;
         this.endRepeat = value.endRepeat !== null ? value.endRepeat : REPEAT_SELECT.NEVER;
         this.endRepeatDate = value.endRepeatDate !== null ? value.endRepeatDate : this.defaultRepeatDate();
-        this.customResult = Object.keys(value.customResult).length !== 0 ? value.customResult : {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
+        this.customResult = value.customResult.num !== null ? value.customResult : {num: null, frequencyValue: null, selectedItem: null};
       }else {
         // 新增数据
         this.repeatValue = REPEAT_SELECT.NEVER;
-        this.endRepeat = REPEAT_SELECT.NEVER;
-        this.endRepeatDate = this.defaultRepeatDate();
-        this.customResult = {num: 1, frequencyValue: REPEAT_SELECT.DAY, selectedItem: []};
       }
     },
     handleRepeatConfirm() {
-      const {repeatValue, endRepeat, endRepeatDate, customResult} = this
-      this.repeat = {repeatValue, endRepeat, endRepeatDate, customResult}
+      const {repeatValue, endRepeat, endRepeatDate, customResult} = this;
+      this.repeat = {repeatValue, endRepeat, endRepeatDate, customResult};
       this.$emit("repeatConfirm", this.repeat);
-      console.log(this.repeat)
     },
     handleRepeatCancel() {
+      this.initLocalVariables(this.repeatBK);
       this.$emit("repeatCancel");
     }
   },

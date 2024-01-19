@@ -3,9 +3,11 @@ package com.ruoyi.web.controller.taskList;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.taskList.domain.entity.TaskList;
+import com.ruoyi.taskList.domain.entity.TaskRepeat;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
 import com.ruoyi.taskList.service.ITaskListService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +42,32 @@ public class TaskListController extends BaseController {
     }
 
     @DeleteMapping("/{taskId}")
+    @Transactional
     public AjaxResult remove(@PathVariable Long taskId) {
+        taskListService.deleteTaskInTaskTags(taskId);
+
         return toAjax(taskListService.deleteTaskById(taskId));
+    }
+
+    @PostMapping("/insertTaskPriority")
+    public AjaxResult addTaskPriority(@Validated @RequestBody TaskList taskList) {
+        return toAjax(taskListService.insertTaskPriority(taskList));
+    }
+
+    @PutMapping("/updateTaskPriority")
+    public AjaxResult editTaskPriority(@Validated @RequestBody TaskList taskList) {
+        return toAjax(taskListService.updateTaskPriority(taskList));
+    }
+
+    @DeleteMapping("/deleteTemplateTaskForRepeat")
+    @Transactional
+    public AjaxResult deleteTemplateTaskForRepeat(@RequestBody TaskList taskList) {
+        taskListService.deleteTaskInTaskTags(taskList.getTaskId());
+        taskListService.deleteTemplateInTemplateTags(taskList);
+        taskListService.deleteTaskTemplate(taskList);
+        taskListService.deleteTaskRepeat(taskList);
+        taskListService.deleteTaskById(taskList.getTaskId());
+
+        return success();
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="stateValue" v-bind="$attrs" filterable @change="change">
+  <el-select v-model="stateValue" v-bind="$attrs" filterable @change="change" clearable>
     <el-option
       v-for="dict in options"
       :key="dict.dictValue"

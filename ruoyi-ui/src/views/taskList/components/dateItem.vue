@@ -43,7 +43,7 @@ export default {
       let tmpDateTime = new Date(this.stateValue.getTime());
       tmpDateTime.setHours(this.value.getHours());
       tmpDateTime.setMinutes(this.value.getMinutes());
-      // tmpDateTime.setSeconds(this.value.getSeconds());
+      tmpDateTime.setSeconds(this.value.getSeconds());
       this.$emit('input', tmpDateTime);
     },
   },

@@ -1,16 +1,18 @@
 package com.ruoyi.taskList.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Data
-public class TaskTags  extends BaseEntity {
+public class TaskTags extends BaseEntity {
     private Long taskId;
 
     private Long tagId;
 
+    @TableField(exist = false)
     private Tag tagData;
 
     @Override

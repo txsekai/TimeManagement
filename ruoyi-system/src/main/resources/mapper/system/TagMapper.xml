@@ -44,10 +44,10 @@
     </select>
 
     <insert id="insertTag" useGeneratedKeys="true" keyProperty="tagId">
-        insert into tag (tag_name)
+        insert into tag (tag_name, create_time)
         values
         <foreach collection="list" item="tag" separator=",">
-            (#{tag.tagName})
+            (#{tag.tagName}, sysdate())
         </foreach>
     </insert>
 
@@ -61,27 +61,6 @@
         delete
         from task_tags
         where tag_id = #{tagId}
-    </delete>
-
-    <insert id="insertTagToTask">
-        insert into task_tags(
-            task_id,
-            tag_id
-        )values
-        <foreach collection="tagIds" item="tagId" separator=",">
-            (#{taskId},
-             #{tagId})
-        </foreach>
-    </insert>
-
-    <delete id="delTagToTask" parameterType="TaskTagsParam">
-        delete
-        from task_tags
-        where task_id = #{taskId}
-        and tag_id in
-        <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">
-            #{tagId}
-        </foreach>
     </delete>
 
     <select id="selectTaskTagsList" parameterType="Long" resultMap="TaskTagsListResult">

@@ -21,16 +21,16 @@ const FormatList = {
             row.repeat.customResult = {
               num: row.repeat.num,
               frequencyValue: row.repeat.frequencyValue,
-              selectedItem: row.repeat.selectedItem.split(',').map(Number)
+              selectedItem: row.repeat.selectedItem!==null ? row.repeat.selectedItem.split(',').map(Number) : null
             };
           }else {
-            row.repeat.customResult = {};
+            row.repeat.customResult = {num: null, frequencyValue: null, selectedItem: null};
           }
 
           row.repeat = {
             repeatValue: row.repeat.repeatValue,
             endRepeat: row.repeat.endRepeat,
-            endRepeatDate: new Date(row.repeat.endRepeatDate),
+            endRepeatDate: row.repeat.endRepeatDate!==null ? new Date(row.repeat.endRepeatDate) : null,
             customResult: row.repeat.customResult
           };
         }

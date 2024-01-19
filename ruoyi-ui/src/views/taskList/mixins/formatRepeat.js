@@ -20,16 +20,19 @@ const RepeatMixin = {
 
   methods: {
     formatSelectedRepeatOption(frequencyValue, selectedRepeatList) {
-      const sortedIndex = [...selectedRepeatList].sort((a, b) => a - b);
+      let sortedIndex = [];
+      if(selectedRepeatList !== null) {
+        sortedIndex = [...selectedRepeatList].sort((a, b) => a - b);
+      }
       switch (frequencyValue) {
         case REPEAT_SELECT.DAY:
           return ''
         case REPEAT_SELECT.WEEK:
-          return this.formattedShowWeek(sortedIndex).map(week => `星期${week}`).join(', ')
+          return selectedRepeatList!==null ? this.formattedShowWeek(sortedIndex).map(week => `星期${week}`).join(', ') : '';
         case REPEAT_SELECT.MONTH:
-          return sortedIndex.map(day => `${day + 1}日`).join(', ')
+          return selectedRepeatList!==null ? sortedIndex.map(day => `${day + 1}日`).join(', ') : '';
         case REPEAT_SELECT.YEAR:
-          return sortedIndex.map(month => `${month + 1}月`).join(', ')
+          return selectedRepeatList!==null ? sortedIndex.map(month => `${month + 1}月`).join(', ') : '';
         default:
           return null
       }

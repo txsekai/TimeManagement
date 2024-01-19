@@ -31,8 +31,16 @@
 </template>
 
 <script>
-import {addTags, delTag, deselectTagToTask, listTags, listTaskTags, selectTagToTask} from "../../../api/taskList/tag";
+import {
+  addTags,
+  delTag,
+  deselectTagToTask, insertTaskAndSelectTagToTask,
+  listTags,
+  listTaskTags,
+  selectTagToTask,
+} from "../../../api/taskList/tag";
 import {v4 as uuidv4} from 'uuid';
+import updateExceptDateTimeForRepeatDialog from "./updateExceptDateTimeForRepeatDialog.vue";
 
 export default {
   name: 'TagDialog',
@@ -59,15 +67,16 @@ export default {
   },
 
   created() {
+    this.dialogVisible = this.value;
     this.getTagList();
   },
 
   computed: {
     tagEffect() {
       return (tagId) => {
-        if(this.isSelected(tagId)) {
+        if (this.isSelected(tagId)) {
           return 'dark';
-        }else  {
+        } else {
           return 'plain'
         }
       }
@@ -124,7 +133,6 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        // 要close的tag在数据库里面
         delTag(tag.tagId).then(res => {
           this.$modal.msgSuccess("标签删除成功");
           this.getTagList();
@@ -154,16 +162,53 @@ export default {
       })
     },
     selectTag(tagId) {
-      selectTagToTask(this.task.taskId, [tagId]).then(res => {
-        this.$modal.msgSuccess("选择标签成功");
-        this.getNewTaskTagsList();
-      })
+      if (this.task.taskRepeatId == null) {
+        // taskId == undefined => 输入taskName之后马上点击dateAndTimeDialog
+        if(this.task.taskId == undefined) {
+          insertTaskAndSelectTagToTask(this.task, tagId).then(res => {
+            this.task.taskId = res.data;
+            this.$modal.msgSuccess("已为该任务选择标签");
+            this.getNewTaskTagsList();
+          })
+        }else {
+          selectTagToTask(this.task, tagId).then(res => {
+            this.$modal.msgSuccess("已为该任务选择标签");
+            this.getNewTaskTagsList();
+          })
+        }
+      } else {
+        this.$openDialog(updateExceptDateTimeForRepeatDialog)({
+          task: this.task,
+          tagId: tagId,
+          hasSelectTag: '1',
+          onDone: () => {
+            this.$parent.getToDoList()
+            this.dialogVisible = false;
+            this.$emit('input', this.dialogVisible);
+          },
+        })
+        this.$parent.getToDoList();
+      }
     },
     deselectTag(tagId) {
-      deselectTagToTask(this.task.taskId, [tagId]).then(res => {
-        this.$modal.msgSuccess("取消选择标签成功");
-        this.getNewTaskTagsList();
-      })
+      if (this.task.taskRepeatId == null) {
+        deselectTagToTask(this.task, tagId).then(res => {
+          this.$modal.msgSuccess("已为该任务取消选择标签");
+          this.getNewTaskTagsList();
+        })
+      } else {
+        this.$openDialog(updateExceptDateTimeForRepeatDialog)({
+          task: this.task,
+          tagId: tagId,
+          hasSelectTag: '0',
+          onDone: () => {
+            this.$parent.getToDoList()
+            this.dialogVisible = false;
+            this.$emit('input', this.dialogVisible);
+          },
+        })
+        this.$parent.getToDoList();
+      }
     },
     handleClose() {
       this.dialogVisible = false;

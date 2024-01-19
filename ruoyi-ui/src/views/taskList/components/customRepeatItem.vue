@@ -101,8 +101,10 @@ export default {
 
   watch: {
     'customResult.frequencyValue'() {
-      while (this.customResult.selectedItem.length > 0) {
-        this.customResult.selectedItem.pop();
+      if (this.customResult.selectedItem !== null) {
+        while (this.customResult.selectedItem.length > 0) {
+          this.customResult.selectedItem.pop();
+        }
       }
       this.labelFormatHolder.frequencyValue = this.customResult.frequencyValue;
       this.labelFormatHolder.selectedRepeatList = this.customResult.selectedItem;
@@ -155,7 +157,7 @@ export default {
       }
     },
     isSelected(selectionArray, item) {
-      return selectionArray.includes(item);
+      return selectionArray !== null ? selectionArray.includes(item) : false;
     },
     handleSelectOrCancel(selectionArray, item) {
       if (this.isSelected(selectionArray, item)) {
@@ -165,8 +167,10 @@ export default {
       }
     },
     select(selectionArray, item) {
-      if (!selectionArray.includes(item)) {
+      if(selectionArray !== null) {
         selectionArray.push(item);
+      }else {
+        selectionArray = [item];
       }
     },
     deselect(selectionArray, item) {

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskList.mapper.TaskRepeatMapper">
+    <resultMap id="NeedRepeatResult" type="com.ruoyi.taskList.domain.query.NeedRepeatTask">
+    </resultMap>
+
+    <select id="findRepeatList" resultMap="NeedRepeatResult">
+        select tr.task_repeat_id,
+               tr.template_id,
+
+               tt.task_name,
+               tt.task_status,
+               tt.task_start_time,
+               tt.task_completed_time,
+               tt.task_priority,
+               tt.user_id,
+
+               GROUP_CONCAT(temtgs.tag_id SEPARATOR ',') as tag_ids
+        from task_repeat tr
+        left join task_template tt
+        on tr.template_id = tt.template_id
+        left join template_tags temtgs
+        on tt.template_id = temtgs.template_id
+        where tr.repeat_value != 'never'
+        and (tr.end_repeat = 'never' || tr.end_repeat_date >= DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00'))
+        group by tr.task_repeat_id,
+                 tr.template_id,
+                 tt.task_name,
+                 tt.task_status,
+                 tt.task_start_time,
+                 tt.task_completed_time,
+                 tt.task_priority,
+                 tt.user_id;
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <insert id="insertTaskToTemplate" parameterType="TaskList" useGeneratedKeys="true" keyProperty="templateId">
+        insert into task_template(
+            task_name,
+            task_status,
+            task_start_time,
+            task_completed_time,
+            task_priority,
+            create_time,
+            user_id
+        )values(
+            #{taskName},
+            #{taskStatus},
+            #{taskStartTime},
+            #{taskCompletedTime},
+            #{taskPriority},
+            sysdate(),
+            1
+        )
+    </insert>
+
+    <insert id="insertDateAndTimeToTaskRepeat" parameterType="TaskList" useGeneratedKeys="true" keyProperty="taskRepeatId">
+        insert into task_repeat(
+            template_id,
+            repeat_value,
+            end_repeat,
+            end_repeat_date,
+            num,
+            frequency_value,
+            selected_item,
+            create_time
+        )values(
+            #{templateId},
+            #{repeatValue},
+            #{endRepeat},
+            #{endRepeatDate},
+            #{num},
+            #{frequencyValue},
+            #{selectedItem},
+            sysdate()
+        )
+    </insert>
+
+    <update id="updateRepeatIdToTaskList" parameterType="Long">
+        update task_list
+        set
+            task_repeat_id = #{taskRepeatId}
+            where task_id = #{taskId}
+    </update>
+</mapper>

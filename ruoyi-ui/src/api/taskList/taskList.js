@@ -38,3 +38,27 @@ export function delTask(taskId) {
     method: "delete"
   })
 }
+
+export function insertTaskPriority(data) {
+  return request({
+    url: '/taskList/insertTaskPriority',
+    method: "post",
+    data: data
+  })
+}
+
+export function updateTaskPriority(data) {
+  return request({
+    url: '/taskList/updateTaskPriority',
+    method: "put",
+    data: data
+  })
+}
+
+export function deleteTemplateTaskForRepeat(data) {
+  return request({
+    url: '/taskList/deleteTemplateTaskForRepeat',
+    method: "delete",
+    data: data
+  })
+}

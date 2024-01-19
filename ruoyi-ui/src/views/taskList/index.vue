@@ -25,7 +25,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="任务优先级" prop="taskPriority">
-        <dict-select type="taskList_priority" v-model="queryParams.taskPriority"
+        <dict-select type="task_priority" v-model="queryParams.taskPriority"
                      placeholder="请选择"></dict-select>
       </el-form-item>
       <el-form-item>
@@ -37,7 +37,7 @@
     <div class="card-container grid">
       <el-card>
         <div>To Do</div>
-        <div>
+        <div class="SeparationOfRepetition">
           <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
         </div>
       </el-card>
@@ -67,7 +67,7 @@ export default {
       queryParams: {
         taskName: '',
         tagName: '',
-        taskPriority: '0'
+        taskPriority: ''
       },
       todoList: [],
     }

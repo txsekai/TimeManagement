@@ -22,10 +22,22 @@ export function delTag(tagId) {
   })
 }
 
-export function selectTagToTask(taskId, tagIds) {
+export function insertTaskAndSelectTagToTask(task, tagId) {
   const data = {
-    taskId,
-    tagIds
+    task,
+    tagId
+  }
+  return request({
+    url: 'taskList/tag/insertTaskAndSelectTagToTask',
+    method: "post",
+    data: data
+  })
+}
+
+export function selectTagToTask(task, tagId) {
+  const data = {
+    task,
+    tagId
   }
   return request({
     url: 'taskList/tag/selectTagToTask',
@@ -34,10 +46,10 @@ export function selectTagToTask(taskId, tagIds) {
   })
 }
 
-export function deselectTagToTask(taskId, tagIds) {
+export function deselectTagToTask(task, tagId) {
   const data = {
-    taskId,
-    tagIds
+    task,
+    tagId
   }
   return request({
     url: 'taskList/tag/deselectTagToTask',
@@ -51,5 +63,31 @@ export function listTaskTags(query) {
     url: 'taskList/tag/taskTags/list',
     method: "get",
     params: query
+  })
+}
+
+export function updateCurrentTaskForRepeat(task, tagId, hasSelectTag) {
+  const data = {
+    task,
+    tagId,
+    hasSelectTag
+  }
+  return request({
+    url: 'taskList/tag/updateCurrentTaskForRepeat',
+    method: "put",
+    data: data
+  })
+}
+
+export function updateTemplateForRepeat(task, tagId, hasSelectTag) {
+  const data = {
+    task,
+    tagId,
+    hasSelectTag
+  }
+  return request({
+    url: 'taskList/tag/updateTemplateForRepeat',
+    method: "put",
+    data: data
   })
 }

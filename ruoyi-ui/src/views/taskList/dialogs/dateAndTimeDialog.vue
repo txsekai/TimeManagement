@@ -75,8 +75,9 @@
     </div>
 
     <el-row>
-      <el-button class="mb8" @click="handleOpenRepeatDialog">重复</el-button>
-      <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(repeat)"></el-row>
+      <el-button class="mb8" @click="handleOpenRepeatDialog">设置重复周期</el-button>
+      <!--      <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(repeat)"></el-row>-->
+      <el-row v-if="repeat!==null" v-html="formattedRepeatResult(repeat)"></el-row>
     </el-row>
 
     <div slot="footer" class="dialog-footer">
@@ -102,6 +103,14 @@ import TimeItem from "../components/timeItem.vue";
 import RepeatDialog from "./repeatDialog.vue";
 import DateMixin from "../mixins/formatDate";
 import RepeatMixin from "../mixins/formatRepeat";
+import {
+  insertDateAndTime,
+  insertDateTimeAndRepeat,
+  updateDateAndTime,
+  updateDateTimeAndRepeat
+} from "../../../api/taskList/dateAndTime";
+import updateDateTimeRepeatForRepeatDialog from "./updateDateTimeRepeatForRepeatDialog.vue";
+import deleteRepeatForRepeatDialog from "./deleteRepeatForRepeatDialog.vue";
 
 export default {
   name: 'DateAndTimeDialog',
@@ -114,6 +123,9 @@ export default {
       default: false
     },
     task: {
+      type: Object
+    },
+    taskBk: {
       type: Object
     }
   },
@@ -153,7 +165,12 @@ export default {
       timeSpentOptions: [10, 15, 20, 30, 40, 60, 90, 120],
 
       repeatDialogVisible: false,
-      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}}
+      repeat: {
+        repeatValue: null,
+        endRepeat: null,
+        endRepeatDate: null,
+        customResult: {num: null, frequencyValue: null, selectedItem: null}
+      },
     }
   },
 
@@ -346,11 +363,68 @@ export default {
     },
     handleDateConfirm() {
       if (this.validateTime()) {
-        // this.task.dateAndTime.startTime = this.startTime;
-        // this.task.dateAndTime.completedTime = this.completedTimeVisible || this.completedDateVisible ? this.completedTime : null;
-        // this.task.repeat = JSON.parse(JSON.stringify(this.repeat));
+        this.task.taskStartTime = this.taskStartTime;
+        this.task.taskCompletedTime = this.completedTimeVisible || this.completedDateVisible ? this.taskCompletedTime : null;
+        this.task.repeat = this.repeat;
+        if (this.repeat !== null && Object.keys(this.repeat.customResult).length !== 0) {
+          this.task.repeat.num = this.repeat.customResult.num;
+          this.task.repeat.frequencyValue = this.repeat.customResult.frequencyValue;
+          this.task.repeat.selectedItem = this.repeat.customResult.selectedItem !== null ? this.repeat.customResult.selectedItem.join(',') : null;
+        }
 
-
+        /*
+        先判断是否已有taskRepeatId, 如果有的话, 就是更新重复: 判断日期,时间,重复是否有变更, 只要一个有变更弹dialog
+        如果没有taskRepeatId就是添加重复: 再判断repeatValue !== null || repeatValue !== 'never', 成立的话就是有设置重复; 反之没有设置重复; 判断是否有变更日期, 时间
+         */
+        if (this.task.taskRepeatId == null) {
+          if (this.repeat.repeatValue !== null && this.repeat.repeatValue !== 'never') {
+            // taskId == undefined => 输入taskName之后马上点击dateAndTimeDialog
+            if(this.task.taskId == undefined) {
+              insertDateTimeAndRepeat(this.task).then(() => {
+                this.$modal.msgSuccess("成功添加日期, 时间, 重复设置");
+                this.$parent.getToDoList();
+              })
+            }else {
+              updateDateTimeAndRepeat(this.task).then(() => {
+                this.$modal.msgSuccess("成功更新日期, 时间, 重复设置");
+                this.$parent.getToDoList();
+              })
+            }
+          } else {
+            if(this.task.taskId == undefined) {
+              insertDateAndTime(this.task).then(() => {
+                this.$modal.msgSuccess("成功添加日期, 时间");
+                this.$parent.getToDoList();
+              })
+            }else {
+              if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
+                this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime()) {
+                updateDateAndTime(this.task).then(() => {
+                  this.$modal.msgSuccess("成功更新日期, 时间");
+                  this.$parent.getToDoList();
+                })
+              }
+            }
+          }
+        } else {
+          /*
+          如果有taskRepeatId, 需要判断是更新repeat还是删除repeat
+           */
+          if (this.repeat.repeatValue == 'never') {
+            this.$openDialog(deleteRepeatForRepeatDialog)({
+              task: this.task,
+              onDone: () => this.$parent.getToDoList(),
+            })
+          } else if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
+            this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime() ||
+            this.task.repeat !== this.taskBk.repeat) {
+            this.$openDialog(updateDateTimeRepeatForRepeatDialog)({
+              task: this.task,
+              onDone: () => this.$parent.getToDoList()
+            })
+          }
+        }
+        this.$parent.getToDoList();
         this.$emit("dateConfirm");
       }
     },
