@@ -49,6 +49,8 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskList.setTaskCompletedTime(taskList.getTaskCompletedTime());
         taskList.setTaskPriority(taskList.getTaskPriority());
         taskList.setUserId(getUserId());
+        Date date = new Date();
+        taskList.setCreateTime(date);
 
         return taskListMapper.insert(taskList);
     }
@@ -78,6 +80,8 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskTemplate.setTaskCompletedTime(taskList.getTaskCompletedTime());
         taskTemplate.setTaskPriority(taskList.getTaskPriority());
         taskTemplate.setUserId(getUserId());
+        Date date = new Date();
+        taskTemplate.setCreateTime(date);
 
         taskTemplateMapper.insert(taskTemplate);
 

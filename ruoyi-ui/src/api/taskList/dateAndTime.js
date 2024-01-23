@@ -48,3 +48,11 @@ export function deleteRepeatForRepeat(data) {
     data: data
   })
 }
+
+export function deleteDateAndTimeAndRepeatForRepeat(data) {
+  return request({
+    url: 'taskList/DateAndTime/deleteDateAndTimeAndRepeatForRepeat',
+    method: 'delete',
+    data: data
+  })
+}

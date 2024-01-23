@@ -87,7 +87,9 @@
                           :task="currentTask"
                           :task-bk="taskBk"
                           @dateConfirm="dateAndTimeDialogVisible=false;buttonClickedAfterBlur=false"
-                          @dateCancel="dateAndTimeDialogVisible=false;buttonClickedAfterBlur=false"></date-and-time-dialog>
+                          @dateCancel="dateAndTimeDialogVisible=false;buttonClickedAfterBlur=false"
+                          @dateDelete="dateAndTimeDialogVisible=false"
+    ></date-and-time-dialog>
   </div>
 </template>
 

@@ -10,6 +10,12 @@
         select tr.task_repeat_id,
                tr.template_id,
 
+               tr.repeat_value,
+               tr.num,
+               tr.frequency_value,
+               tr.selected_item,
+               tr.create_time,
+
                tt.task_name,
                tt.task_status,
                tt.task_start_time,
@@ -19,20 +25,25 @@
 
                GROUP_CONCAT(temtgs.tag_id SEPARATOR ',') as tag_ids
         from task_repeat tr
-        left join task_template tt
-        on tr.template_id = tt.template_id
-        left join template_tags temtgs
-        on tt.template_id = temtgs.template_id
+                 left join task_template tt
+                           on tr.template_id = tt.template_id
+                 left join template_tags temtgs
+                           on tt.template_id = temtgs.template_id
         where tr.repeat_value != 'never'
         and (tr.end_repeat = 'never' || tr.end_repeat_date >= DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00'))
         group by tr.task_repeat_id,
-                 tr.template_id,
-                 tt.task_name,
-                 tt.task_status,
-                 tt.task_start_time,
-                 tt.task_completed_time,
-                 tt.task_priority,
-                 tt.user_id;
+            tr.template_id,
+            tr.repeat_value,
+            tr.num,
+            tr.frequency_value,
+            tr.selected_item,
+            tr.create_time,
+            tt.task_name,
+            tt.task_status,
+            tt.task_start_time,
+            tt.task_completed_time,
+            tt.task_priority,
+            tt.user_id;
     </select>
 
 

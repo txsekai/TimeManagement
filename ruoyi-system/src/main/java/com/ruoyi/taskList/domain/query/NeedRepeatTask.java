@@ -12,6 +12,16 @@ public class NeedRepeatTask {
 
     private Long templateId;
 
+    private String repeatValue;
+
+    private Long num;
+
+    private String frequencyValue;
+
+    private String selectedItem;
+
+    private Date createTime;
+
     private String taskName;
 
     private String taskStatus;
@@ -31,6 +41,11 @@ public class NeedRepeatTask {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("taskRepeatId", getTaskRepeatId())
                 .append("templateId", getTemplateId())
+                .append("repeatValue", getRepeatValue())
+                .append("num", getNum())
+                .append("frequencyValue", getFrequencyValue())
+                .append("selectedItem", getSelectedItem())
+                .append("createTime", getCreateTime())
                 .append("taskName", getTaskName())
                 .append("taskStatus", getTaskStatus())
                 .append("taskStartTime", getTaskStartTime())

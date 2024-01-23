@@ -7,7 +7,7 @@
   >
     <el-row>
       <i class="el-icon-warning warning-icon-style"></i>
-      <span>该日程为重复任务, 请问仅删除当前任务还是删除所有未来任务?</span>
+      <span>该任务为重复任务, 请问仅删除当前任务还是删除所有未来任务?</span>
     </el-row>
     <template v-slot:footerButton>
       <el-button @click="handleCurrentTask">仅删除当前任务</el-button>

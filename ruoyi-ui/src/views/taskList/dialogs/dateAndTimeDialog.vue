@@ -76,13 +76,13 @@
 
     <el-row>
       <el-button class="mb8" @click="handleOpenRepeatDialog">设置重复周期</el-button>
-      <!--      <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(repeat)"></el-row>-->
       <el-row v-if="repeat!==null" v-html="formattedRepeatResult(repeat)"></el-row>
     </el-row>
 
     <div slot="footer" class="dialog-footer">
       <el-button v-show="showDateDeleteButton"
-                 @click="handleDateDelete">删除日程
+                 @click="handleDateDelete">
+        {{ task.taskRepeatId === null ? '删除日期时间' : '删除日期时间以及重复' }}
       </el-button>
       <el-button @click="handleDateConfirm">确认</el-button>
       <el-button @click="handleDateCancel">取消</el-button>
@@ -104,6 +104,8 @@ import RepeatDialog from "./repeatDialog.vue";
 import DateMixin from "../mixins/formatDate";
 import RepeatMixin from "../mixins/formatRepeat";
 import {
+  deleteDateAndTimeAndRepeatForRepeat,
+  deleteRepeatForRepeat,
   insertDateAndTime,
   insertDateTimeAndRepeat,
   updateDateAndTime,
@@ -377,18 +379,20 @@ export default {
         如果没有taskRepeatId就是添加重复: 再判断repeatValue !== null || repeatValue !== 'never', 成立的话就是有设置重复; 反之没有设置重复; 判断是否有变更日期, 时间
          */
         if (this.task.taskRepeatId == null) {
-          if (this.repeat.repeatValue !== null && this.repeat.repeatValue !== 'never') {
-            // taskId == undefined => 输入taskName之后马上点击dateAndTimeDialog
-            if(this.task.taskId == undefined) {
-              insertDateTimeAndRepeat(this.task).then(() => {
-                this.$modal.msgSuccess("成功添加日期, 时间, 重复设置");
-                this.$parent.getToDoList();
-              })
-            }else {
-              updateDateTimeAndRepeat(this.task).then(() => {
-                this.$modal.msgSuccess("成功更新日期, 时间, 重复设置");
-                this.$parent.getToDoList();
-              })
+          if(this.repeat !== null) {
+            if (this.repeat.repeatValue !== null && this.repeat.repeatValue !== 'never') {
+              // taskId == undefined => 输入taskName之后马上点击dateAndTimeDialog
+              if(this.task.taskId == undefined) {
+                insertDateTimeAndRepeat(this.task).then(() => {
+                  this.$modal.msgSuccess("成功添加日期, 时间, 重复设置");
+                  this.$parent.getToDoList();
+                })
+              }else {
+                updateDateTimeAndRepeat(this.task).then(() => {
+                  this.$modal.msgSuccess("成功更新日期, 时间, 重复设置");
+                  this.$parent.getToDoList();
+                })
+              }
             }
           } else {
             if(this.task.taskId == undefined) {
@@ -439,7 +443,29 @@ export default {
       }
     },
     handleDateDelete() {
+      let msg = '';
+      if(this.task.taskRepeatId == null) {
+        msg = "确认要删除该日程的日期, 时间吗？";
+      }else {
+        msg = "该日程为重复日程, 确认要删除该重复日程所有的日期, 时间以及重复设置吗？";
+      }
+      this.$confirm(msg, "确认", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.startTime = null;
+        this.completedTime = null;
+        this.task.taskStartTime = this.startTime;
+        this.task.taskCompletedTime = this.completedTime;
 
+        deleteDateAndTimeAndRepeatForRepeat(this.task).then(res => {
+          this.$modal.msgSuccess("已成功删除");
+          this.$parent.getToDoList();
+        })
+      }).catch(() => {
+      })
+      this.$emit("dateDelete");
     },
   },
 }

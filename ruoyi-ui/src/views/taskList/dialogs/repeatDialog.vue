@@ -96,10 +96,7 @@ export default {
       }, {
         value: REPEAT_SELECT.EVERYWEEK,
         label: convertLabel(REPEAT_SELECT.EVERYWEEK)
-      }, {
-        value: REPEAT_SELECT.EVERYWORKDAY,
-        label: convertLabel(REPEAT_SELECT.EVERYWORKDAY)
-      }, {
+      },  {
         value: REPEAT_SELECT.EVERYMONTH,
         label: convertLabel(REPEAT_SELECT.EVERYMONTH)
       }, {
@@ -176,13 +173,11 @@ export default {
     },
     initLocalVariables(value) {
       if(value !== null) {
-        // 数据库有repeat
         this.repeatValue = value.repeatValue !== null ? value.repeatValue : REPEAT_SELECT.NEVER;
         this.endRepeat = value.endRepeat !== null ? value.endRepeat : REPEAT_SELECT.NEVER;
-        this.endRepeatDate = value.endRepeatDate !== null ? value.endRepeatDate : this.defaultRepeatDate();
+        this.endRepeatDate = value.endRepeatDate !== null ? value.endRepeatDate : null;
         this.customResult = value.customResult.num !== null ? value.customResult : {num: null, frequencyValue: null, selectedItem: null};
       }else {
-        // 新增数据
         this.repeatValue = REPEAT_SELECT.NEVER;
       }
     },

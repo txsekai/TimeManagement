@@ -103,4 +103,18 @@ public class DateAndTimeController extends BaseController {
 
         return success();
     }
+
+    @DeleteMapping("/deleteDateAndTimeAndRepeatForRepeat")
+    @Transactional
+    public AjaxResult deleteDateAndTimeAndRepeatForRepeat(@RequestBody TaskList taskList) {
+        dateAndTimeService.updateDateAndTimeToTaskList(taskList);
+
+        if(taskList.getTaskRepeatId() != null) {
+            dateAndTimeService.deleteTemplate(taskList);
+            dateAndTimeService.deleteRepeat(taskList);
+            dateAndTimeService.updateRepeatIdToNullInTaskList(taskList);
+        }
+
+        return success();
+    }
 }
