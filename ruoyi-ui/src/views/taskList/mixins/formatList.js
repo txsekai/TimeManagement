@@ -5,7 +5,9 @@ const FormatList = {
 
       for (let row of todoList) {
         if(row.createTime !== null) {
-          row.createTime = new Date(row.createTime).toLocaleDateString().slice(0, 10);
+          const date = new Date(row.createTime);
+          date.setHours(date.getHours() + 8);
+          row.createTime = date.toISOString().slice(0, 10);
         }
 
         row.initialTaskName = row.taskName;

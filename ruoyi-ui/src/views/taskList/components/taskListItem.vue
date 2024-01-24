@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row v-for="(tasks, date) in taskList" :key="date" style="margin-bottom: 10px">
+    <el-row v-for="(tasks, date) in taskList" :key="date" style="margin-bottom: 2px">
       <h3 style="margin: 8px 0">{{ date }}</h3>
 
       <ul class="task-ul">
@@ -263,7 +263,9 @@ export default {
       }
     },
     addTask() {
-      const date = new Date().toLocaleDateString().slice(0, 10);
+      let date = new Date()
+      date.setHours(date.getHours() + 8)
+      date = date.toISOString().slice(0, 10);
       const newTask = {
         taskStatus: '0',
         taskName: '',
