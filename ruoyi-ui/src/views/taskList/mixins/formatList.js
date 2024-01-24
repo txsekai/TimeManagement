@@ -1,11 +1,19 @@
 const FormatList = {
   methods: {
     formattedToDoList(todoList) {
+      const classifiedTodoList = {};
+
       for (let row of todoList) {
+        if(row.createTime !== null) {
+          row.createTime = new Date(row.createTime).toISOString().slice(0, 10);
+        }
+
         row.initialTaskName = row.taskName;
+
         if(row.taskStartTime !== null) {
           row.taskStartTime = new Date(row.taskStartTime);
         }
+
         if(row.taskCompletedTime !== null) {
           row.taskCompletedTime = new Date(row.taskCompletedTime);
         }
@@ -34,7 +42,14 @@ const FormatList = {
             customResult: row.repeat.customResult
           };
         }
+
+        if(classifiedTodoList[row.createTime]) {
+          classifiedTodoList[row.createTime].push(row);
+        }else {
+          classifiedTodoList[row.createTime] = [row];
+        }
       }
+
       return todoList;
     },
   }
