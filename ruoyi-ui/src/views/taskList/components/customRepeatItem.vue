@@ -167,9 +167,9 @@ export default {
       }
     },
     select(selectionArray, item) {
-      if(selectionArray !== null) {
+      if (selectionArray !== null) {
         selectionArray.push(item);
-      }else {
+      } else {
         selectionArray = [item];
       }
     },

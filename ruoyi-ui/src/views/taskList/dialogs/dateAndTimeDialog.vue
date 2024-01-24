@@ -376,7 +376,7 @@ export default {
 
         /*
         先判断是否已有taskRepeatId, 如果有的话, 就是更新重复: 判断日期,时间,重复是否有变更, 只要一个有变更弹dialog
-        如果没有taskRepeatId就是添加重复: 再判断repeatValue !== null || repeatValue !== 'never', 成立的话就是有设置重复; 反之没有设置重复; 判断是否有变更日期, 时间
+        如果没有taskRepeatId就是添加重复: 再判断repeatValue !== null && repeatValue !== 'never', 成立的话就是有设置重复; 反之没有设置重复; 判断是否有变更日期, 时间
          */
         if (this.task.taskRepeatId == null) {
           if(this.repeat !== null) {

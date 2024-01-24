@@ -50,7 +50,13 @@ const FormatList = {
         }
       }
 
-      return todoList;
+      Object.keys(classifiedTodoList).forEach(date => {
+        classifiedTodoList[date].sort((a, b) => {
+          return new Date(a.createTime) - new Date(b.createTime);
+        })
+      })
+
+      return classifiedTodoList;
     },
   }
 }

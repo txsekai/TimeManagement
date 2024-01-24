@@ -80,7 +80,7 @@
         <if test="taskPriority !=null and taskPriority != ''">
             and tl.task_priority = #{taskPriority}
         </if>
-        order by tl.task_id
+        order by tl.create_time
     </select>
 
     <insert id="insertTaskList" parameterType="TaskList" useGeneratedKeys="true" keyProperty="taskId">

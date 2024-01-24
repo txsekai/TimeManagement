@@ -113,8 +113,8 @@ export default {
       endRepeatDate: null,
 
       customResult: {num: null, frequencyValue: null, selectedItem: null},
-      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}},
-      repeatBK: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}},
+      repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {num: null, frequencyValue: null, selectedItem: null}},
+      repeatBK: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {num: null, frequencyValue: null, selectedItem: null}},
     }
   },
 

@@ -1,84 +1,89 @@
 <template>
   <div>
-    <el-row v-for="(task, index) in taskList" :key="'taskList_'+index" style="margin-bottom: 10px">
-      <div class="task">
-        <h3>{{ task.createTime }}</h3>
+    <el-row v-for="(tasks, date) in taskList" :key="date" style="margin-bottom: 10px">
+      <h3 style="margin: 8px 0">{{ date }}</h3>
 
-        <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
+      <ul class="task-ul">
+        <li v-for="(task, index) in tasks" :key="task.id" class="mb5">
+          <div class="task">
+            <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
 
-        <div class="task-detail">
-          <div class="task-edit" @click="startEditing(task, index)" v-show="!task.editing">
+            <div class="task-detail">
+              <div class="task-edit" @click="startEditing(task, date, index)" v-show="!task.editing">
 
-            <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
+                <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
 
-            <el-row class="mb5">
-              <el-tag class="tag-group"
-                      v-for="tag in task.tags"
-                      :key="tag.tagId"
-              >{{ tag.tagName }}
-              </el-tag>
-            </el-row>
-            <el-row v-if="task.taskStartTime" class="mb5">
-              <span>开始：{{ formatDate(task.taskStartTime) }}</span>
-              <span v-if="task.taskCompletedTime"> ~ </span>
-              <span v-if="task.taskCompletedTime">完成：{{
-                  formatDate(task.taskCompletedTime)
-                }}</span>
-            </el-row>
-            <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(task.repeat)" class="mb5"></el-row>
-            <el-row v-if="task.taskPriority!=='0'">
-              <i v-for="starCount in Number(task.taskPriority)" :key="starCount" class="el-icon-star-on"></i>
-            </el-row>
+                <el-row class="mb5">
+                  <el-tag class="tag-group"
+                          v-for="tag in task.tags"
+                          :key="tag.tagId"
+                  >{{ tag.tagName }}
+                  </el-tag>
+                </el-row>
+                <el-row v-if="task.taskStartTime" class="mb5">
+                  <span>开始：{{ formatDate(task.taskStartTime) }}</span>
+                  <span v-if="task.taskCompletedTime"> ~ </span>
+                  <span v-if="task.taskCompletedTime">完成：{{
+                      formatDate(task.taskCompletedTime)
+                    }}</span>
+                </el-row>
+                <el-row v-if="task.taskRepeatId!==null" v-html="formattedRepeatResult(task.repeat)"
+                        class="mb5"></el-row>
+                <el-row v-if="task.taskPriority!=='0'">
+                  <i v-for="starCount in Number(task.taskPriority)" :key="starCount" class="el-icon-star-on"></i>
+                </el-row>
+              </div>
+
+              <div class="input-and-settings mb5" v-show="task.editing">
+                <el-input
+                  :id="`task_input_${date}_${index}`"
+                  v-model="task.taskName"
+                  ref="taskInputs"
+                  @blur="inputBlur(task)"
+                  @keyup.enter.native="$event.target.blur"
+                  @change="taskNameInputChange(task)"
+                ></el-input>
+                <el-row v-if="showSettings" class="settings-row">
+                  <el-tooltip content="标签" placement="bottom-start">
+                    <el-button
+                      class="setting-icon"
+                      icon="el-icon-discount setting-click"
+                      @click="openTagDialog(task)"
+                    ></el-button>
+                  </el-tooltip>
+
+                  <el-tooltip content="日期, 时间" placement="bottom-start">
+                    <el-button
+                      class="setting-icon"
+                      icon="el-icon-time setting-click"
+                      @click="openDateAndTimeDialog(task)"
+                    ></el-button>
+                  </el-tooltip>
+
+                  <el-dropdown @command="handlePriorityCommand(task, $event)" class="priority-style">
+                    <el-tooltip content="优先级" placement="bottom-start">
+                      <el-button class="setting-icon" icon="el-icon-star-on"></el-button>
+                    </el-tooltip>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item v-for="option in priorityOptions"
+                                        :key="option.value"
+                                        :command="option.value"
+                                        class="setting-click"
+                                        @click.native="handleSettingIconClick"
+                      >{{ option.label }}
+                        <i v-for="starCount in option.value"
+                           :key="starCount"
+                           class="el-icon-star-on setting-click"
+                        ></i>
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </el-row>
+              </div>
+            </div>
           </div>
-
-          <div class="input-and-settings" v-show="task.editing">
-            <el-input
-              :id="'task_input_' + index"
-              v-model="task.taskName"
-              ref="taskInputs"
-              @blur="inputBlur(task)"
-              @keyup.enter.native="$event.target.blur"
-              @change="taskNameInputChange(task)"
-            ></el-input>
-            <el-row v-if="showSettings" class="settings-row">
-              <el-tooltip content="标签" placement="bottom-start">
-                <el-button
-                  class="setting-icon"
-                  icon="el-icon-discount setting-click"
-                  @click="openTagDialog(task)"
-                ></el-button>
-              </el-tooltip>
-
-              <el-tooltip content="日期, 时间" placement="bottom-start">
-                <el-button
-                  class="setting-icon"
-                  icon="el-icon-time setting-click"
-                  @click="openDateAndTimeDialog(task)"
-                ></el-button>
-              </el-tooltip>
-
-              <el-dropdown @command="handlePriorityCommand(task, $event)" class="priority-style">
-                <el-tooltip content="优先级" placement="bottom-start">
-                  <el-button class="setting-icon" icon="el-icon-star-on"></el-button>
-                </el-tooltip>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="option in priorityOptions"
-                                    :key="option.value"
-                                    :command="option.value"
-                                    class="setting-click"
-                                    @click.native="handleSettingIconClick"
-                  >{{ option.label }}
-                    <i v-for="starCount in option.value"
-                       :key="starCount"
-                       class="el-icon-star-on setting-click"
-                    ></i>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </el-row>
-          </div>
-        </div>
-      </div>
+        </li>
+      </ul>
     </el-row>
 
     <el-button class="add-list-button" @click="addTask">+ 添加事项</el-button>
@@ -120,7 +125,7 @@ export default {
 
   props: {
     todoList: {
-      type: Array
+      type: Object
     },
     queryParams: {
       type: Object
@@ -129,7 +134,7 @@ export default {
 
   data() {
     return {
-      taskList: [],
+      taskList: {},
       currentTask: {},
       taskInputs: [],
 
@@ -175,12 +180,12 @@ export default {
         this.taskList = this.formattedToDoList(res.data);
       })
     },
-    startEditing(task, index) {
+    startEditing(task, date, index) {
       this.$set(task, 'editing', true);
       this.currentTask = task;
 
       this.$nextTick().then(() => {
-        const inputElement = document.getElementById(`task_input_${index}`);
+        const inputElement = document.getElementById(`task_input_${date}_${index}`);
         if (inputElement) {
           inputElement.focus();
         }
@@ -220,7 +225,7 @@ export default {
         setTimeout(() => {
           if (task.initialTaskName == undefined) {
             // blur之后马上点击setting icon, 这时候taskId还没有存到数据库, 所以各个setting要insert taskId
-            if(!this.buttonClickedAfterBlur) {
+            if (!this.buttonClickedAfterBlur) {
               addTask(task).then(res => {
                 self.$modal.msgSuccess("新增任务成功");
                 self.getToDoList();
@@ -258,6 +263,7 @@ export default {
       }
     },
     addTask() {
+      const date = new Date().toISOString().slice(0, 10);
       const newTask = {
         taskStatus: '0',
         taskName: '',
@@ -266,9 +272,15 @@ export default {
         taskStartTime: null,
         taskCompletedTime: null,
         taskPriority: '0',
-        repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {}}
+        repeat: {repeatValue: null, endRepeat: null, endRepeatDate: null, customResult: {num: null, frequencyValue: null, selectedItem: null}}
       }
-      this.taskList.push(newTask);
+
+      if(this.taskList[date]) {
+        this.taskList[date].push(newTask);
+      }else {
+        this.taskList[date] = [newTask];
+      }
+
       this.currentTask = newTask;
 
       this.$nextTick(() => {
@@ -310,12 +322,12 @@ export default {
     handlePriorityCommand(task, command) {
       task.taskPriority = command;
       if (task.taskRepeatId == null) {
-        if(task.taskId == undefined) {
+        if (task.taskId == undefined) {
           insertTaskPriority(task).then(res => {
             this.$modal.msgSuccess("已添加任务并更新优先级");
             this.getToDoList();
           })
-        }else {
+        } else {
           updateTaskPriority(task).then(res => {
             this.$modal.msgSuccess("任务优先级修改成功");
             this.getToDoList();
@@ -344,6 +356,12 @@ export default {
 </script>
 
 <style scoped>
+.task-ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 10px;
+}
+
 .task {
   display: flex;
   gap: 4px;

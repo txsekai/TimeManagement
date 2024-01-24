@@ -36,7 +36,7 @@
 
     <div class="card-container grid">
       <el-card>
-        <div>To Do</div>
+        <h3 style="margin: 10px 0">待办</h3>
         <div class="SeparationOfRepetition">
           <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
         </div>
@@ -69,7 +69,7 @@ export default {
         tagName: '',
         taskPriority: ''
       },
-      todoList: [],
+      todoList: {},
     }
   },
 
