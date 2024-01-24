@@ -393,6 +393,21 @@ export default {
                   this.$parent.getToDoList();
                 })
               }
+            }else if(this.repeat.repeatValue == null || this.repeat.repeatValue == "never"){
+              if(this.task.taskId == undefined) {
+                insertDateAndTime(this.task).then(() => {
+                  this.$modal.msgSuccess("成功添加日期, 时间");
+                  this.$parent.getToDoList();
+                })
+              }else {
+                if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
+                  this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime()) {
+                  updateDateAndTime(this.task).then(() => {
+                    this.$modal.msgSuccess("成功更新日期, 时间");
+                    this.$parent.getToDoList();
+                  })
+                }
+              }
             }
           } else {
             if(this.task.taskId == undefined) {
@@ -433,6 +448,7 @@ export default {
       }
     },
     handleDateCancel() {
+      this.$parent.getToDoList();
       this.$emit("dateCancel");
     },
     handleOpenRepeatDialog() {

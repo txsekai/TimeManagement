@@ -263,7 +263,7 @@ export default {
       }
     },
     addTask() {
-      const date = new Date().toISOString().slice(0, 10);
+      const date = new Date().toLocaleDateString().slice(0, 10);
       const newTask = {
         taskStatus: '0',
         taskName: '',
