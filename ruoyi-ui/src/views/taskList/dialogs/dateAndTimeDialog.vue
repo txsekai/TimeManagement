@@ -385,26 +385,26 @@ export default {
               if(this.task.taskId == undefined) {
                 insertDateTimeAndRepeat(this.task).then(() => {
                   this.$modal.msgSuccess("成功添加日期, 时间, 重复设置");
-                  this.$parent.getToDoList();
+                  this.$parent.getTaskList();
                 })
               }else {
                 updateDateTimeAndRepeat(this.task).then(() => {
                   this.$modal.msgSuccess("成功更新日期, 时间, 重复设置");
-                  this.$parent.getToDoList();
+                  this.$parent.getTaskList();
                 })
               }
             }else if(this.repeat.repeatValue == null || this.repeat.repeatValue == "never"){
               if(this.task.taskId == undefined) {
                 insertDateAndTime(this.task).then(() => {
                   this.$modal.msgSuccess("成功添加日期, 时间");
-                  this.$parent.getToDoList();
+                  this.$parent.getTaskList();
                 })
               }else {
                 if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
                   this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime()) {
                   updateDateAndTime(this.task).then(() => {
                     this.$modal.msgSuccess("成功更新日期, 时间");
-                    this.$parent.getToDoList();
+                    this.$parent.getTaskList();
                   })
                 }
               }
@@ -413,14 +413,14 @@ export default {
             if(this.task.taskId == undefined) {
               insertDateAndTime(this.task).then(() => {
                 this.$modal.msgSuccess("成功添加日期, 时间");
-                this.$parent.getToDoList();
+                this.$parent.getTaskList();
               })
             }else {
               if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
                 this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime()) {
                 updateDateAndTime(this.task).then(() => {
                   this.$modal.msgSuccess("成功更新日期, 时间");
-                  this.$parent.getToDoList();
+                  this.$parent.getTaskList();
                 })
               }
             }
@@ -432,23 +432,23 @@ export default {
           if (this.repeat.repeatValue == 'never') {
             this.$openDialog(deleteRepeatForRepeatDialog)({
               task: this.task,
-              onDone: () => this.$parent.getToDoList(),
+              onDone: () => this.$parent.getTaskList(),
             })
           } else if (this.task.taskStartTime.getTime() !== this.taskBk.taskStartTime?.getTime() ||
             this.task.taskCompletedTime?.getTime() !== this.taskBk.taskCompletedTime?.getTime() ||
             this.task.repeat !== this.taskBk.repeat) {
             this.$openDialog(updateDateTimeRepeatForRepeatDialog)({
               task: this.task,
-              onDone: () => this.$parent.getToDoList()
+              onDone: () => this.$parent.getTaskList()
             })
           }
         }
-        this.$parent.getToDoList();
+        this.$parent.getTaskList();
         this.$emit("dateConfirm");
       }
     },
     handleDateCancel() {
-      this.$parent.getToDoList();
+      this.$parent.getTaskList();
       this.$emit("dateCancel");
     },
     handleOpenRepeatDialog() {
@@ -477,7 +477,7 @@ export default {
 
         deleteDateAndTimeAndRepeatForRepeat(this.task).then(res => {
           this.$modal.msgSuccess("已成功删除");
-          this.$parent.getToDoList();
+          this.$parent.getTaskList();
         })
       }).catch(() => {
       })

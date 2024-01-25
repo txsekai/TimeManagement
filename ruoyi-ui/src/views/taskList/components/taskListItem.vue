@@ -107,7 +107,7 @@ import FormatList from "../mixins/formatList";
 import {
   addTask,
   delTask,
-  insertTaskPriority,
+  insertTaskPriority, listDoingTask, listDoneTask,
   listToDoTask,
   updateTaskName,
   updateTaskPriority
@@ -124,6 +124,9 @@ export default {
   mixins: [DateMixin, RepeatMixin, FormatList],
 
   props: {
+    type: {
+      type: String,
+    },
     todoList: {
       type: Object
     },
@@ -134,6 +137,7 @@ export default {
 
   data() {
     return {
+      taskType: '',
       taskList: {},
       currentTask: {},
       taskInputs: [],
@@ -160,9 +164,14 @@ export default {
     }
   },
 
+  created() {
+    this.taskType = this.type;
+    this.getTaskList();
+  },
+
   watch: {
-    todoList(val) {
-      this.taskList = val;
+    type(val) {
+      this.taskType = val;
     },
   },
 
@@ -175,10 +184,16 @@ export default {
   },
 
   methods: {
-    getToDoList() {
-      listToDoTask(this.queryParams).then(res => {
-        this.taskList = this.formattedTaskList(res.data);
-      })
+    getTaskList() {
+      if(this.taskType == '0') {
+        listToDoTask(this.queryParams).then(res => {
+          this.taskList = this.formattedTaskList(res.data);
+        })
+      }else if(this.taskType == '1') {
+        listDoingTask(this.queryParams).then(res => {
+          this.taskList = this.formattedTaskList(res.data);
+        })
+      }
     },
     startEditing(task, date, index) {
       this.$set(task, 'editing', true);
@@ -203,22 +218,22 @@ export default {
             if (task.taskId !== undefined) {
               delTask(task.taskId).then(() => {
                 this.$modal.msgSuccess("删除任务成功");
-                this.getToDoList();
+                this.getTaskList();
               }).catch(() => {
               })
             } else {
-              this.getToDoList();
+              this.getTaskList();
             }
           }).catch(() => {
-            this.getToDoList();
+            this.getTaskList();
           })
         } else {
           // 如果是重复任务, 但已经停止重复了, 当成重复任务直接删除
           this.$openDialog(deleteTaskForRepeatDialog)({
             task: task,
-            onDone: () => this.getToDoList(),
+            onDone: () => this.getTaskList(),
           })
-          this.getToDoList();
+          this.getTaskList();
         }
       } else {
         let self = this;
@@ -228,7 +243,7 @@ export default {
             if (!this.buttonClickedAfterBlur) {
               addTask(task).then(res => {
                 self.$modal.msgSuccess("新增任务成功");
-                self.getToDoList();
+                self.getTaskList();
               })
             }
           }
@@ -251,14 +266,14 @@ export default {
         if (task.taskRepeatId == null) {
           updateTaskName(task).then(res => {
             this.$modal.msgSuccess("任务名称修改成功");
-            this.getToDoList();
+            this.getTaskList();
           })
         } else {
           this.$openDialog(updateExceptDateTimeForRepeatDialog)({
             task: task,
-            onDone: () => this.getToDoList(),
+            onDone: () => this.getTaskList(),
           })
-          this.getToDoList();
+          this.getTaskList();
         }
       }
     },
@@ -267,7 +282,7 @@ export default {
       date.setHours(date.getHours() + 8)
       date = date.toISOString().slice(0, 10);
       const newTask = {
-        taskStatus: '0',
+        taskStatus: this.taskType=='0' ? '0' : '1',
         taskName: '',
         editing: true,
         tags: [],
@@ -327,20 +342,20 @@ export default {
         if (task.taskId == undefined) {
           insertTaskPriority(task).then(res => {
             this.$modal.msgSuccess("已添加任务并更新优先级");
-            this.getToDoList();
+            this.getTaskList();
           })
         } else {
           updateTaskPriority(task).then(res => {
             this.$modal.msgSuccess("任务优先级修改成功");
-            this.getToDoList();
+            this.getTaskList();
           })
         }
       } else {
         this.$openDialog(updateExceptDateTimeForRepeatDialog)({
           task: task,
-          onDone: () => this.getToDoList(),
+          onDone: () => this.getTaskList(),
         })
-        this.getToDoList();
+        this.getTaskList();
       }
     },
   },

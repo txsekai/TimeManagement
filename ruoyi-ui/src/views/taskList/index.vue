@@ -37,11 +37,12 @@
     <div class="card-container grid">
       <el-card>
         <h3 style="margin: 10px 0">待办</h3>
-        <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
+        <task-list-item ref="taskTodoListItem" :type="todo" :query-params="queryParams"></task-list-item>
       </el-card>
 
       <el-card>
         <h3 style="margin: 10px 0">正在处理</h3>
+        <task-list-item ref="taskDoingListItem" :type="doing" :query-params="queryParams"></task-list-item>
       </el-card>
 
       <el-card>
@@ -55,7 +56,7 @@
 import DictSelect from "./components/dictSelect.vue";
 import TaskListItem from "./components/taskListItem.vue";
 import FormatList from "./mixins/formatList";
-import {listDoingTask, listDoneTask, listToDoTask} from "../../api/taskList/taskList";
+import bus from "./eventBus/bus";
 
 export default {
   name: 'List',
@@ -69,30 +70,19 @@ export default {
         tagName: '',
         taskPriority: ''
       },
-      todoList: {},
-      doingList: {},
-      doneList: {},
+      todo: "0",
+      doing: "1",
     }
   },
 
-  created() {
-    this.getTaskList();
+  mounted() {
+    bus.$on('call-handle-query', this.handleQuery);
   },
 
   methods: {
-    getTaskList() {
-      listToDoTask(this.queryParams).then(res => {
-        this.todoList = this.formattedTaskList(res.data);
-      })
-      listDoingTask(this.queryParams).then(res => {
-        this.doingList = this.formattedTaskList(res.data);
-      })
-      listDoneTask(this.queryParams).then(res => {
-        this.doneList = this.formattedTaskList(res.data);
-      })
-    },
     handleQuery() {
-      this.getTaskList();
+      this.$refs.taskTodoListItem.getTaskList();
+      this.$refs.taskDoingListItem.getTaskList();
     },
     resetQuery() {
       this.resetForm("queryForm")

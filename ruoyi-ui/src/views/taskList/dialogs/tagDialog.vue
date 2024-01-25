@@ -182,12 +182,12 @@ export default {
           tagId: tagId,
           hasSelectTag: '1',
           onDone: () => {
-            this.$parent.getToDoList()
+            this.$parent.getTaskList()
             this.dialogVisible = false;
             this.$emit('input', this.dialogVisible);
           },
         })
-        this.$parent.getToDoList();
+        this.$parent.getTaskList();
       }
     },
     deselectTag(tagId) {
@@ -202,19 +202,19 @@ export default {
           tagId: tagId,
           hasSelectTag: '0',
           onDone: () => {
-            this.$parent.getToDoList()
+            this.$parent.getTaskList()
             this.dialogVisible = false;
             this.$emit('input', this.dialogVisible);
           },
         })
-        this.$parent.getToDoList();
+        this.$parent.getTaskList();
       }
     },
     handleClose() {
       this.dialogVisible = false;
       this.$emit("input", this.dialogVisible);
 
-      this.$parent.getToDoList();
+      this.$parent.getTaskList();
     }
   },
 }

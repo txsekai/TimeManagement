@@ -61,6 +61,7 @@ export default {
 
         updateTaskStatus(this.task).then(res => {
           this.$modal.msgSuccess("任务状态修改成功");
+          this.$bus.$emit('call-handle-query')
         })
       }
 
