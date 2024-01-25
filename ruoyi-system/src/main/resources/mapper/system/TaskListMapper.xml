@@ -53,6 +53,7 @@
             tl.task_repeat_id,
             tl.task_priority,
             tl.create_time_copy,
+            tl.create_time,
 
             t.tag_id,
             t.tag_name,
