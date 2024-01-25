@@ -177,7 +177,7 @@ export default {
   methods: {
     getToDoList() {
       listToDoTask(this.queryParams).then(res => {
-        this.taskList = this.formattedToDoList(res.data);
+        this.taskList = this.formattedTaskList(res.data);
       })
     },
     startEditing(task, date, index) {
