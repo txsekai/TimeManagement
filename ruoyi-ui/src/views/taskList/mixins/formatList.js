@@ -1,9 +1,9 @@
 const FormatList = {
   methods: {
-    formattedToDoList(todoList) {
+    formattedTaskList(taskList) {
       const classifiedTodoList = {};
 
-      for (let row of todoList) {
+      for (let row of taskList) {
         if(row.createTimeCopy !== null) {
           let date = new Date(row.createTimeCopy);
           date.setHours(date.getHours() + 8);

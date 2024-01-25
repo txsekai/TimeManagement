@@ -38,6 +38,16 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
     }
 
     @Override
+    public List<TaskList> selectDoingList(TaskListQueryParam taskListQueryParam) {
+        return taskListMapper.selectDoingList(taskListQueryParam);
+    }
+
+    @Override
+    public List<TaskList> selectDoneList(TaskListQueryParam taskListQueryParam) {
+        return taskListMapper.selectDoneList(taskListQueryParam);
+    }
+
+    @Override
     public int insertTaskList(TaskList taskList) {
         LoginUser user = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         taskList.setUserId(user.getUserId());

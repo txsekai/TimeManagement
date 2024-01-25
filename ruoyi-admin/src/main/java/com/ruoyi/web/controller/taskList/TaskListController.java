@@ -29,6 +29,18 @@ public class TaskListController extends BaseController {
         return success(list);
     }
 
+    @GetMapping("/doing/list")
+    public AjaxResult doingList(TaskListQueryParam taskListQueryParam) {
+        List<TaskList> list = taskListService.selectDoingList(taskListQueryParam);
+        return success(list);
+    }
+
+    @GetMapping("/done/list")
+    public AjaxResult doneList(TaskListQueryParam taskListQueryParam) {
+        List<TaskList> list = taskListService.selectDoneList(taskListQueryParam);
+        return success(list);
+    }
+
     @PostMapping("/addTask")
     public AjaxResult add(@Validated @RequestBody TaskList taskList) {
         return toAjax(taskListService.insertTaskList(taskList));

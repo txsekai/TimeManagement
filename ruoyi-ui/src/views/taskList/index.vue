@@ -37,15 +37,15 @@
     <div class="card-container grid">
       <el-card>
         <h3 style="margin: 10px 0">待办</h3>
-        <div class="SeparationOfRepetition">
-          <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
-        </div>
+        <task-list-item :todo-list="todoList" :query-params="queryParams"></task-list-item>
       </el-card>
 
       <el-card>
+        <h3 style="margin: 10px 0">正在处理</h3>
       </el-card>
 
       <el-card>
+        <h3 style="margin: 10px 0">已完成</h3>
       </el-card>
     </div>
   </div>
@@ -55,7 +55,7 @@
 import DictSelect from "./components/dictSelect.vue";
 import TaskListItem from "./components/taskListItem.vue";
 import FormatList from "./mixins/formatList";
-import {listToDoTask} from "../../api/taskList/taskList";
+import {listDoingTask, listDoneTask, listToDoTask} from "../../api/taskList/taskList";
 
 export default {
   name: 'List',
@@ -70,21 +70,29 @@ export default {
         taskPriority: ''
       },
       todoList: {},
+      doingList: {},
+      doneList: {},
     }
   },
 
   created() {
-    this.getToDoList();
+    this.getTaskList();
   },
 
   methods: {
-    getToDoList() {
+    getTaskList() {
       listToDoTask(this.queryParams).then(res => {
-        this.todoList = this.formattedToDoList(res.data);
+        this.todoList = this.formattedTaskList(res.data);
+      })
+      listDoingTask(this.queryParams).then(res => {
+        this.doingList = this.formattedTaskList(res.data);
+      })
+      listDoneTask(this.queryParams).then(res => {
+        this.doneList = this.formattedTaskList(res.data);
       })
     },
     handleQuery() {
-      this.getToDoList();
+      this.getTaskList();
     },
     resetQuery() {
       this.resetForm("queryForm")

@@ -72,7 +72,37 @@
 
     <select id="selectToDoList" parameterType="TaskListQueryParam" resultMap="TaskListResult">
         <include refid="selectTaskListVo" />
-        where tl.task_status in( '0', '1', '2')
+        where tl.task_status='0'
+        <if test="taskName != null and taskName != ''" >
+            and tl.task_name like concat('%', #{taskName}, '%')
+        </if>
+        <if test="tagName != null and tagName != ''">
+            and t.tag_name like concat('%', #{tagName}, '%')
+        </if>
+        <if test="taskPriority !=null and taskPriority != ''">
+            and tl.task_priority = #{taskPriority}
+        </if>
+        order by tl.create_time
+    </select>
+
+    <select id="selectDoingList" parameterType="TaskListQueryParam" resultMap="TaskListResult">
+        <include refid="selectTaskListVo" />
+        where tl.task_status='1'
+        <if test="taskName != null and taskName != ''" >
+            and tl.task_name like concat('%', #{taskName}, '%')
+        </if>
+        <if test="tagName != null and tagName != ''">
+            and t.tag_name like concat('%', #{tagName}, '%')
+        </if>
+        <if test="taskPriority !=null and taskPriority != ''">
+            and tl.task_priority = #{taskPriority}
+        </if>
+        order by tl.create_time
+    </select>
+
+    <select id="selectDoneList" parameterType="TaskListQueryParam" resultMap="TaskListResult">
+        <include refid="selectTaskListVo" />
+        where tl.task_status='2'
         <if test="taskName != null and taskName != ''" >
             and tl.task_name like concat('%', #{taskName}, '%')
         </if>

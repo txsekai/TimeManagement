@@ -9,6 +9,10 @@ import java.util.List;
 public interface ITaskListService extends IService<TaskList> {
     public List<TaskList> selectToDoList(TaskListQueryParam taskListQueryParam);
 
+    public List<TaskList> selectDoingList(TaskListQueryParam taskListQueryParam);
+
+    public List<TaskList> selectDoneList(TaskListQueryParam taskListQueryParam);
+
     public int insertTaskList(TaskList taskList);
 
     public int updateTaskStatus(TaskList taskList);
