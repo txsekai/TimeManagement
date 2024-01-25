@@ -51,6 +51,7 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskList.setUserId(getUserId());
         Date date = new Date();
         taskList.setCreateTime(date);
+        taskList.setCreateTimeCopy(date);
 
         return taskListMapper.insert(taskList);
     }
@@ -67,6 +68,9 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         LambdaUpdateWrapper<TaskList> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(TaskList::getTaskStartTime, taskList.getTaskStartTime());
         wrapper.set(TaskList::getTaskCompletedTime, taskList.getTaskCompletedTime());
+        wrapper.set(TaskList::getCreateTimeCopy, taskList.getCreateTime());
+        Date date = new Date();
+        wrapper.set(TaskList::getUpdateTime, date);
         wrapper.eq(TaskList::getTaskId, taskList.getTaskId());
         return taskListMapper.update(null, wrapper);
     }
@@ -123,6 +127,7 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
     public int updateRepeatIdToTaskList(TaskList taskList, Long taskRepeatId) {
         taskList.setTaskId(taskList.getTaskId());
         taskList.setTaskRepeatId(taskRepeatId);
+        taskList.setCreateTimeCopy(taskList.getCreateTime());
         Date date = new Date();
         taskList.setUpdateTime(date);
 
@@ -206,9 +211,10 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
     public int updateRepeatIdToNullInTaskList(TaskList taskList) {
         LambdaUpdateWrapper<TaskList> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(TaskList::getTaskRepeatId, null);
+        wrapper.set(TaskList::getCreateTimeCopy, taskList.getCreateTime());
         Date date = new Date();
         wrapper.set(TaskList::getUpdateTime, date);
-        wrapper.eq(TaskList::getTaskId, taskList.getTaskId());
+        wrapper.eq(TaskList::getTaskRepeatId, taskList.getTaskRepeatId());
 
         return taskListMapper.update(null, wrapper);
     }

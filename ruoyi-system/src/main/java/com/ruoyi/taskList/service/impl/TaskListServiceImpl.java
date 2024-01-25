@@ -1,6 +1,7 @@
 package com.ruoyi.taskList.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -49,6 +50,7 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
         taskList.setUserId(user.getUserId());
         Date date = new Date();
         taskList.setCreateTime(date);
+        taskList.setCreateTimeCopy(date);
         return taskListMapper.insert(taskList);
     }
 
@@ -84,6 +86,7 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
         taskList.setUserId(user.getUserId());
         Date date = new Date();
         taskList.setCreateTime(date);
+        taskList.setCreateTimeCopy(date);
 
         return taskListMapper.insert(taskList);
     }
@@ -92,6 +95,7 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
     public int updateTaskPriority(TaskList taskList) {
         taskList.setTaskId(taskList.getTaskId());
         taskList.setTaskPriority(taskList.getTaskPriority());
+        taskList.setCreateTimeCopy(taskList.getCreateTime());
         Date date = new Date();
         taskList.setUpdateTime(date);
         return taskListMapper.updateById(taskList);

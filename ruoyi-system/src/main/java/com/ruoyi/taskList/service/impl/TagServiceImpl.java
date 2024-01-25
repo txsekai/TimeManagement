@@ -88,6 +88,8 @@ public class TagServiceImpl implements ITagService {
         taskList.setUserId(user.getUserId());
         Date date = new Date();
         taskList.setCreateTime(date);
+        taskList.setCreateTimeCopy(date);
+
         taskListMapper.insert(taskList);
 
         return taskList.getTaskId();
@@ -124,6 +126,7 @@ public class TagServiceImpl implements ITagService {
         taskList.setTaskId(taskTagParam.getTask().getTaskId());
         taskList.setTaskName(taskTagParam.getTask().getTaskName());
         taskList.setTaskPriority(taskTagParam.getTask().getTaskPriority());
+        taskList.setCreateTimeCopy(taskList.getCreateTime());
         Date date = new Date();
         taskList.setUpdateTime(date);
 

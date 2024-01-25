@@ -28,6 +28,8 @@ public class TaskList extends BaseEntity {
 
     private String taskPriority;
 
+    private Date createTimeCopy;
+
     private Long userId;
 
     @TableField(exist = false)
@@ -46,6 +48,7 @@ public class TaskList extends BaseEntity {
                 .append("taskCompletedTime", getTaskCompletedTime())
                 .append("taskRepeatId", getTaskRepeatId())
                 .append("taskPriority", getTaskPriority())
+                .append("createTimeCopy", getCreateTimeCopy())
                 .append("userId", getUserId())
                 .append("repeat", getRepeat())
                 .append("tags", getTags())

@@ -5,6 +5,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.taskList.domain.entity.TaskList;
 import com.ruoyi.taskList.domain.entity.TaskRepeat;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
+import com.ruoyi.taskList.service.IDateAndTimeService;
 import com.ruoyi.taskList.service.ITaskListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,9 @@ public class TaskListController extends BaseController {
 
     @Autowired
     private ITaskListService taskListService;
+
+    @Autowired
+    private IDateAndTimeService dateAndTimeService;
 
     @GetMapping("/todo/list")
     public AjaxResult todolist(TaskListQueryParam taskListQueryParam) {
@@ -65,6 +69,7 @@ public class TaskListController extends BaseController {
         taskListService.deleteTaskInTaskTags(taskList.getTaskId());
         taskListService.deleteTemplateInTemplateTags(taskList);
         taskListService.deleteTaskTemplate(taskList);
+        dateAndTimeService.updateRepeatIdToNullInTaskList(taskList);
         taskListService.deleteTaskRepeat(taskList);
         taskListService.deleteTaskById(taskList.getTaskId());
 

@@ -4,10 +4,10 @@ const FormatList = {
       const classifiedTodoList = {};
 
       for (let row of todoList) {
-        if(row.createTime !== null) {
-          const date = new Date(row.createTime);
+        if(row.createTimeCopy !== null) {
+          let date = new Date(row.createTimeCopy);
           date.setHours(date.getHours() + 8);
-          row.createTime = date.toISOString().slice(0, 10);
+          row.createTimeCopy = date.toISOString().slice(0, 10);
         }
 
         row.initialTaskName = row.taskName;
@@ -45,16 +45,16 @@ const FormatList = {
           };
         }
 
-        if(classifiedTodoList[row.createTime]) {
-          classifiedTodoList[row.createTime].push(row);
+        if(classifiedTodoList[row.createTimeCopy]) {
+          classifiedTodoList[row.createTimeCopy].push(row);
         }else {
-          classifiedTodoList[row.createTime] = [row];
+          classifiedTodoList[row.createTimeCopy] = [row];
         }
       }
 
       Object.keys(classifiedTodoList).forEach(date => {
         classifiedTodoList[date].sort((a, b) => {
-          return new Date(a.createTime) - new Date(b.createTime);
+          return new Date(a.createTimeCopy) - new Date(b.createTimeCopy);
         })
       })
 

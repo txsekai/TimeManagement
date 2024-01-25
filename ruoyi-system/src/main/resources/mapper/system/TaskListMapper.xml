@@ -12,6 +12,7 @@
         <result property="taskCompletedTime" column="task_completed_time"/>
         <result property="taskRepeatId" column="task_repeat_id"/>
         <result property="taskPriority" column="task_priority"/>
+        <result property="createTimeCopy" column="create_time_copy"/>
         <result property="createBy"   column="create_by"   />
         <result property="createTime" column="create_time" />
         <result property="updateBy"   column="update_by"   />
@@ -51,7 +52,7 @@
             tl.task_completed_time,
             tl.task_repeat_id,
             tl.task_priority,
-            tl.create_time,
+            tl.create_time_copy,
 
             t.tag_id,
             t.tag_name,
@@ -83,26 +84,20 @@
         order by tl.create_time
     </select>
 
-    <insert id="insertTaskList" parameterType="TaskList" useGeneratedKeys="true" keyProperty="taskId">
-        insert into task_list(
-            <if test="taskName != null and taskName != ''">task_name,</if>
-            <if test="taskStatus != null and taskStatus != '0'">task_status,</if>
-            create_time,
-            user_id
-        )values(
-            <if test="taskName != null and taskName != ''">#{taskName},</if>
-            <if test="taskStatus != null and taskStatus != '0'">#{taskStatus},</if>
-            sysdate(),
-            1
-        )
-    </insert>
-
     <update id="updateTaskStatus" parameterType="TaskList">
-        update task_list set task_status = #{taskStatus},update_time = sysdate() where task_id = #{taskId}
+        update task_list
+        set task_status = #{taskStatus},
+            create_time_copy = #{createTime},
+            update_time = sysdate()
+        where task_id = #{taskId}
     </update>
 
     <update id="updateTaskName" parameterType="TaskList">
-        update task_list set task_name = #{taskName}, update_time = sysdate() where task_id = #{taskId}
+        update task_list
+        set task_name = #{taskName},
+            create_time_copy = #{createTime},
+            update_time = sysdate()
+        where task_id = #{taskId}
     </update>
 
     <delete id="deleteTaskById" parameterType="Long">
