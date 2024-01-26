@@ -4,12 +4,12 @@
       <h3 style="margin: 8px 0">{{ date }}</h3>
 
       <ul class="task-ul">
-        <li v-for="(task, index) in tasks" :key="task.id" class="mb5">
+        <li v-for="task in tasks" :key="task.taskId" class="mb5">
           <div class="task">
             <task-status-item ref="taskStatusItem" :task="task" style="margin: 2px"></task-status-item>
 
             <div class="task-detail">
-              <div class="task-edit" @click="startEditing(task, date, index)" v-show="!task.editing">
+              <div class="task-edit" @click="startEditing(task, date, task.taskId)" v-show="!task.editing">
 
                 <span style="display: inline-block; padding-top: 2px">{{ task.taskName }}</span>
 
@@ -36,7 +36,7 @@
 
               <div class="input-and-settings mb5" v-show="task.editing">
                 <el-input
-                  :id="`task_input_${date}_${index}`"
+                  :id="`task_input_${date}_${task.taskId}`"
                   v-model="task.taskName"
                   ref="taskInputs"
                   @blur="inputBlur(task)"
@@ -107,7 +107,7 @@ import FormatList from "../mixins/formatList";
 import {
   addTask,
   delTask,
-  insertTaskPriority, listDoingTask, listDoneTask,
+  insertTaskPriority, listDoingTask,
   listToDoTask,
   updateTaskName,
   updateTaskPriority
@@ -195,12 +195,12 @@ export default {
         })
       }
     },
-    startEditing(task, date, index) {
+    startEditing(task, date, taskId) {
       this.$set(task, 'editing', true);
       this.currentTask = task;
 
       this.$nextTick().then(() => {
-        const inputElement = document.getElementById(`task_input_${date}_${index}`);
+        const inputElement = document.getElementById(`task_input_${date}_${taskId}`);
         if (inputElement) {
           inputElement.focus();
         }

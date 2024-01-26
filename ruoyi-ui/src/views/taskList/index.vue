@@ -47,6 +47,7 @@
 
       <el-card>
         <h3 style="margin: 10px 0">已完成</h3>
+        <task-list-done-item ref="taskDoneListItem" :type="done" :query-params="queryParams"></task-list-done-item>
       </el-card>
     </div>
   </div>
@@ -57,11 +58,12 @@ import DictSelect from "./components/dictSelect.vue";
 import TaskListItem from "./components/taskListItem.vue";
 import FormatList from "./mixins/formatList";
 import bus from "./eventBus/bus";
+import TaskListDoneItem from "./components/taskListDoneItem.vue";
 
 export default {
   name: 'List',
   mixins: [FormatList],
-  components: {TaskListItem, DictSelect},
+  components: {TaskListDoneItem, TaskListItem, DictSelect},
 
   data() {
     return {
@@ -72,6 +74,7 @@ export default {
       },
       todo: "0",
       doing: "1",
+      done: "2",
     }
   },
 
@@ -83,6 +86,7 @@ export default {
     handleQuery() {
       this.$refs.taskTodoListItem.getTaskList();
       this.$refs.taskDoingListItem.getTaskList();
+      this.$refs.taskDoneListItem.getTaskList();
     },
     resetQuery() {
       this.resetForm("queryForm")
