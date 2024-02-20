@@ -192,3 +192,8 @@ aside {
 .btn-none-border {
   border: none;
 }
+
+.btn-hover-background-none:hover,
+.btn-hover-background-none:focus{
+  background-color: #fff;
+}
