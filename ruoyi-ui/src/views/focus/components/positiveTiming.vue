@@ -8,7 +8,7 @@
         <div :class="{ 'highlighted': tick <= currentSecond }"
              style="height:8%; width:2px; background-color:#606266"></div>
         <div style="height: 92%;width:100%;"></div>
-      </div>
+      </div>`
 
       <div class="timer-text">{{ formatTime }}</div>
     </div>
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import {POMODORO_TIME} from "../constants/pomodoroConstants";
+
 export default {
   name: 'PositiveTiming',
   props: {
@@ -53,7 +55,7 @@ export default {
     isCompleted(val) {
       if (this.timerType == 'positiveTimer') {
         if (val) {
-          if (this.minutes >= 5) {
+          if (this.minutes >= POMODORO_TIME.FIVE) {
             this.$message({
               message: `恭喜你，已完成${this.formatTimeResult}`,
               type: 'success'
@@ -88,11 +90,10 @@ export default {
 
   methods: {
     validateCompletedTime() {
-      // todo 小于5分钟, 应该是放弃, 大于5分钟才是完成
-      if (this.minutes < 5) {
+      if (this.minutes < POMODORO_TIME.FIVE) {
         this.$confirm("至少需要专注5分钟, 否则此次专注将不被记录", '提示', {
           confirmButtonText: '继续',
-          cancelButtonText: '完成',
+          cancelButtonText: '放弃',
           type: 'warning'
         }).then(() => {
           this.$emit('update-state', {

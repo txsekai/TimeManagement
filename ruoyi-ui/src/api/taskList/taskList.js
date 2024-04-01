@@ -78,3 +78,33 @@ export function deleteTemplateTaskForRepeat(data) {
     data: data
   })
 }
+
+export function msgInfo() {
+  return request({
+    url: 'taskList/getMsgInfo',
+    method: 'get',
+  })
+}
+
+export function addUserMsg(data) {
+  return request({
+    url: 'taskList/addUserMsg',
+    method: 'post',
+    data: data
+  })
+}
+
+export function assistantProcess(data) {
+  return request({
+    url: 'taskList/assistantProcess',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getAssistantCatch() {
+  return request({
+    url: 'taskList/getAssistantCatch',
+    method: 'get'
+  })
+}

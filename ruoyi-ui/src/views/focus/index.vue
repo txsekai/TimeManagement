@@ -73,6 +73,7 @@ export default {
       isCompleted: false,
 
       openPomodoroSetting: false,
+
     };
   },
 
@@ -118,7 +119,7 @@ export default {
       this.isTimerRunning = state.isTimerRunning;
       this.showContinueOrCompleteBtn = state.showContinueOrCompleteBtn;
       this.isCompleted = state.isCompleted;
-    }
+    },
   },
 }
 </script>

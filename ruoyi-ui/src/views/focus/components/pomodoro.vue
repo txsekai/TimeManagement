@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="timer-container">
-      <div class="pomodoro-container">
+      <div v-show="!isShortRest" class="pomodoro-container">
         <div class="stalk-icon"></div>
 
         <div class="leaf-icon leaf-icon1"></div>
@@ -11,6 +11,12 @@
 
         <div class="timer-text">{{ formatTime }}</div>
       </div>
+
+      <!--   休息的样式     -->
+      <pomodoro-rest v-show="isShortRest" :pomodoro-result="pomodoroResult"
+                     :is-short-rest="isShortRest"
+                     @rest-finish="handleRestFinish"
+      ></pomodoro-rest>
 
       <div style="margin-top: 15px">番茄钟</div>
     </div>
@@ -22,10 +28,12 @@
 
 <script>
 import PomodoroSetting from "../dialogs/pomodoroSetting.vue";
+import {POMODORO_TIME} from "../constants/pomodoroConstants";
+import PomodoroRest from "./pomodoroRest.vue";
 
 export default {
   name: 'Pomodoro',
-  components: {PomodoroSetting},
+  components: {PomodoroSetting, PomodoroRest},
 
   props: {
     isTimerRunning: {
@@ -45,10 +53,13 @@ export default {
   data() {
     return {
       pomodoroSettingVisible: false,
-      seconds: 60,
-      minutes: 24,
+      seconds: 59,
+      minutes: POMODORO_TIME.TWENTYFOUR,
+      pastTimeInSeconds: 0,
       timerInterval: null,
       pomodoroResult: {duration: null, shortRest: null, pomodoroNum: null, longRest: null, autoRest: null},
+      isShortRest: false,
+      isLongRest: false,
     }
   },
 
@@ -56,10 +67,15 @@ export default {
     isTimerRunning(val) {
       if (this.timerType == 'pomodoro') {
         if (val) {
+          // 点开始计时
           if (this.openPomodoroSetting) {
             this.pomodoroSettingVisible = true;
+          } else {
+            // 继续
+            if (this.pomodoroResult.duration !== null) {
+              this.tick();
+            }
           }
-          this.tick();
         } else {
           clearInterval(this.timerInterval);
         }
@@ -68,14 +84,13 @@ export default {
     isCompleted(val) {
       if (this.timerType == 'pomodoro') {
         if (val) {
-          if (this.minutes >= 5) {
+          if (this.calcPastTimeInMinutes() >= 1) {
             this.$message({
-              message: `恭喜你，已完成${this.formatTimeResult}`,
+              message: `恭喜你，已完成${this.formatTimeResult()}`,
               type: 'success'
             })
 
-            this.pomodoroResult.duration = null;
-
+            this.pomodoroResult = {duration: null, shortRest: null, pomodoroNum: null, longRest: null, autoRest: null};
             clearInterval(this.timerInterval);
           } else {
             this.validateCompletedTime();
@@ -89,20 +104,20 @@ export default {
     formatTime() {
       if (this.pomodoroResult.duration !== null) {
         const seconds = this.seconds;
-        const minutes = this.pomodoroResult.duration - 1;
+        const minutes = this.minutes;
         return `${this.pad(minutes)}:${this.pad(seconds)}`;
       } else {
-        return `${this.pad(25)}:${this.pad(0)}`;
+        return `${this.pad(POMODORO_TIME.TWENTYFIVE)}:${this.pad(0)}`;
       }
-    }
+    },
   },
 
   methods: {
     validateCompletedTime() {
-      if (this.minutes < 5) {
+      if (this.calcPastTimeInMinutes() < 1) {
         this.$confirm("至少需要专注5分钟, 否则此次专注将不被记录", '提示', {
           confirmButtonText: '继续',
-          cancelButtonText: '完成',
+          cancelButtonText: '放弃',
           type: 'warning'
         }).then(() => {
           this.$emit('update-state', {
@@ -119,7 +134,7 @@ export default {
             isCompleted: true
           });
 
-          this.pomodoroResult.duration = null;
+          this.pomodoroResult = {duration: null, shortRest: null, pomodoroNum: null, longRest: null, autoRest: null};
           clearInterval(this.timerInterval);
         })
       }
@@ -129,34 +144,58 @@ export default {
     },
     tick() {
       clearInterval(this.timerInterval);
-      this.minutes = this.pomodoroResult.duration - 1;
+      if (this.pomodoroResult.duration == null) {
+        // 开始计时
+        this.minutes = this.pomodoroResult.duration - 1;
+      }
 
       this.timerInterval = setInterval(() => {
         this.seconds--;
         if (this.seconds == 0) {
-          this.seconds = 60;
+          this.seconds = 59;
           this.minutes--;
           if (this.minutes == 0) {
-            this.$message('恭喜你已完成');
+            /*
+             每个番茄时长到了之后要提示
+              如果自动休息, 就直接进入休息时间, 可以选择跳过休息, 在休息中也可以继续休息完成计时
+              如果没有自动休息就继续计时, 页面展示休息button, 等待用户暂停并开始休息
+             长休息的逻辑--一轮的番茄个数完成
+             */
+            this.isShortRest = true;
           }
         }
       }, 1000);
     },
-    formatTimeResult() {
+    calcPastTimeInSeconds() {
       let totalTimeInSeconds = this.pomodoroResult.duration * 60;
       let remainingTimeInSeconds = this.minutes * 60 + this.seconds;
 
       let pastTimeInSeconds = totalTimeInSeconds - remainingTimeInSeconds;
 
-      let minutes = Math.floor(pastTimeInSeconds / 60);
-      let seconds = pastTimeInSeconds % 60;
+      return pastTimeInSeconds;
+    },
+    calcPastTimeInMinutes() {
+      let pastTimeInMinutes = Math.floor(this.calcPastTimeInSeconds() / 60);
 
-      let formattedTime = `${minutes}分钟 + ${this.pad(seconds)}秒`;
+      return pastTimeInMinutes;
+    },
+    formatTimeResult() {
+      let minutes = this.calcPastTimeInMinutes();
+      let seconds = this.calcPastTimeInSeconds() % 60;
+
+      let formattedTime = `${minutes}分钟${seconds}秒`;
 
       return formattedTime;
     },
     handlePomodoroSettingConfirm(pomodoroResult) {
       this.pomodoroResult = pomodoroResult;
+
+      this.minutes = this.pomodoroResult.duration - 1;
+      this.seconds = 59;
+      this.tick();
+    },
+    handleRestFinish(isShortRest) {
+      this.isShortRest = isShortRest;
     },
   }
 }
@@ -176,54 +215,6 @@ export default {
   align-items: center;
   justify-content: center;
   background: linear-gradient(to bottom, #ffcccc, #f03e3e);
-}
-
-.stalk-icon {
-  position: absolute;
-  width: 5%;
-  height: 10%;
-  top: -10px;
-  background-color: #2f9e44;
-  border-radius: 4px;
-}
-
-.leaf-icon {
-  position: absolute;
-  opacity: 0.8;
-  background: linear-gradient(to bottom, #37b24d, #2f9e44);
-  z-index: 1;
-}
-
-.leaf-icon1 {
-  width: 20%;
-  height: 35%;
-  top: 0;
-  left: 31%;
-  border-radius: 100% 4px;
-}
-
-.leaf-icon2 {
-  width: 20%;
-  height: 35%;
-  top: 0;
-  left: 50%;
-  border-radius: 4px 100%;
-}
-
-.leaf-icon3 {
-  width: 26%;
-  height: 25%;
-  top: 2px;
-  left: 58%;
-  border-radius: 4px 100%;
-}
-
-.leaf-icon4 {
-  width: 26%;
-  height: 25%;
-  top: 2px;
-  left: 18%;
-  border-radius: 100% 4px;
 }
 
 .timer-text {

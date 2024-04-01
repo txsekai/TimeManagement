@@ -2,9 +2,13 @@ package com.ruoyi.taskList.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.taskList.domain.entity.TaskList;
+import com.ruoyi.taskList.domain.entity.MsgInfo;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
+import com.yupi.yucongming.dev.common.BaseResponse;
+import com.yupi.yucongming.dev.model.DevChatResponse;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface ITaskListService extends IService<TaskList> {
     public List<TaskList> selectToDoList(TaskListQueryParam taskListQueryParam);
@@ -32,4 +36,14 @@ public interface ITaskListService extends IService<TaskList> {
     public int deleteTaskTemplate(TaskList taskList);
 
     public int deleteTaskRepeat(TaskList taskList);
+
+    public List<MsgInfo> getMsgInfoList();
+
+    public int insertUserMsgToMsgInfo(MsgInfo msgInfo);
+
+    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo);
+
+    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo);
+
+    public Long insertAssistantMsgToMsgInfo(String responseData);
 }

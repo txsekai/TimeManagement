@@ -1,0 +1,10 @@
+export const POMODORO_TIME = {
+  ONE: 1,
+  FOUR: 4,
+  FIVE: 5,
+  TEN: 10,
+  TWENTY: 20,
+  TWENTYFOUR: 24,
+  TWENTYFIVE: 25,
+  HUNDREDTWENTY: 120,
+}

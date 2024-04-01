@@ -37,4 +37,15 @@ public class TaskTemplate extends BaseEntity {
                 .append("userId", getUserId())
                 .toString();
     }
+
+   /* public static TaskTemplate fromTaskList(TaskList taskList){
+        TaskTemplate taskTemplate = new TaskTemplate();
+        taskTemplate.setTaskName(taskList.getTaskName());
+        taskTemplate.setTaskStatus(taskList.getTaskStatus());
+        taskTemplate.setTaskStartTime(taskList.getTaskStartTime());
+        taskTemplate.setTaskCompletedTime(taskList.getTaskCompletedTime());
+        taskTemplate.setTaskPriority(taskList.getTaskPriority());
+        taskTemplate.setUserId(getUserId());
+        return taskTemplate;
+    }*/
 }

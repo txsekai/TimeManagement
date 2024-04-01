@@ -9,14 +9,14 @@ import com.ruoyi.common.utils.ReflectionUpdateUtil;
 import com.ruoyi.taskList.domain.entity.*;
 import com.ruoyi.taskList.mapper.*;
 import com.ruoyi.taskList.service.IDateAndTimeService;
+import com.ruoyi.taskList.service.ITagService;
+import com.ruoyi.taskList.util.UserInfoUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList> implements IDateAndTimeService {
@@ -35,11 +35,14 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
     @Autowired
     private TemplateTagsMapper templateTagsMapper;
 
-    public Long getUserId() {
-        LoginUser user = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//    @Autowired
+//    private ITagService tagService;
 
-        return user.getUserId();
-    }
+//    public Long getUserId() {
+//        LoginUser user = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        return user.getUserId();
+//    }
 
     @Override
     public int insertDateAndTimeToTaskList(TaskList taskList) {
@@ -48,7 +51,7 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskList.setTaskStartTime(taskList.getTaskStartTime());
         taskList.setTaskCompletedTime(taskList.getTaskCompletedTime());
         taskList.setTaskPriority(taskList.getTaskPriority());
-        taskList.setUserId(getUserId());
+        taskList.setUserId(UserInfoUtil.getUserId());
         Date date = new Date();
         taskList.setCreateTime(date);
         taskList.setCreateTimeCopy(date);
@@ -83,10 +86,15 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskTemplate.setTaskStartTime(taskList.getTaskStartTime());
         taskTemplate.setTaskCompletedTime(taskList.getTaskCompletedTime());
         taskTemplate.setTaskPriority(taskList.getTaskPriority());
-        taskTemplate.setUserId(getUserId());
+        taskTemplate.setUserId(UserInfoUtil.getUserId());
+
+        // 调用insert的时候自动填充
         Date date = new Date();
         taskTemplate.setCreateTime(date);
-
+//        TaskTemplate.fromTaskList(taskList);
+//------------------------------------------------------------
+//        TaskTemplate taskTemplate = new TaskTemplate();
+//        BeanUtils.copyProperties(taskList, taskTemplate);  后期维护比较麻烦
         taskTemplateMapper.insert(taskTemplate);
 
         return taskTemplate.getTemplateId();
@@ -99,6 +107,7 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         Date date = new Date();
         templateTags.setCreateTime(date);
         List<Tag> tags = taskList.getTags();
+        // 改成批量
         for(Tag tag : tags) {
             templateTags.setTagId(tag.getTagId());
             templateTagsMapper.insert(templateTags);
@@ -130,6 +139,7 @@ public class DateAndTimeServiceImpl extends ServiceImpl<TaskListMapper, TaskList
         taskList.setCreateTimeCopy(taskList.getCreateTime());
         Date date = new Date();
         taskList.setUpdateTime(date);
+//        taskList.setUpdateTime(null);
 
         return taskListMapper.updateById(taskList);
     }

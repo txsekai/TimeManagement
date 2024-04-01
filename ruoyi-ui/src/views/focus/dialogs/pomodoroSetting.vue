@@ -11,14 +11,18 @@
       <el-col :span="6" style="text-align: center">
         <span>番茄时长</span>
         <div>
+<!--          <el-button @click="durationMinus"-->
+<!--                     class="el-icon-remove btn-none-border btn-hover-background-none"-->
+<!--                     :disabled="duration==POMODORO_TIME.FIVE"-->
+<!--          ></el-button>-->
           <el-button @click="durationMinus"
                      class="el-icon-remove btn-none-border btn-hover-background-none"
-                     :disabled="duration==5"
+                     :disabled="duration==0"
           ></el-button>
           <span>{{ duration }}</span>
           <el-button @click="durationAdd"
                      class="el-icon-circle-plus btn-none-border btn-hover-background-none"
-                     :disabled="duration==120"
+                     :disabled="duration==POMODORO_TIME.HUNDREDTWENTY"
           ></el-button>
         </div>
         <span>分钟</span>
@@ -34,7 +38,7 @@
           <span>{{ shortRest }}</span>
           <el-button @click="shortRestAdd"
                      class="el-icon-circle-plus btn-none-border btn-hover-background-none"
-                     :disabled="shortRest==10"
+                     :disabled="shortRest==POMODORO_TIME.TEN"
           ></el-button>
         </div>
         <span>分钟</span>
@@ -45,12 +49,12 @@
         <div>
           <el-button @click="pomodoroNumMinus"
                      class="el-icon-remove btn-none-border btn-hover-background-none"
-                     :disabled="pomodoroNum==0"
+                     :disabled="pomodoroNum==POMODORO_TIME.ONE"
           ></el-button>
           <span>{{ pomodoroNum }}</span>
           <el-button @click="pomodoroNumAdd"
                      class="el-icon-circle-plus btn-none-border btn-hover-background-none"
-                     :disabled="pomodoroNum==10"
+                     :disabled="pomodoroNum==POMODORO_TIME.TEN"
           ></el-button>
         </div>
       </el-col>
@@ -65,7 +69,7 @@
           <span>{{ longRest }}</span>
           <el-button @click="longRestAdd"
                      class="el-icon-circle-plus btn-none-border btn-hover-background-none"
-                     :disabled="longRest==20"
+                     :disabled="longRest==POMODORO_TIME.TWENTY"
           ></el-button>
         </div>
         <span>分钟</span>
@@ -82,8 +86,15 @@
 </template>
 
 <script>
+import {POMODORO_TIME} from "../constants/pomodoroConstants";
+
 export default {
   name: 'PomodoroSetting',
+  computed: {
+    POMODORO_TIME() {
+      return POMODORO_TIME
+    }
+  },
   props: {
     value: {
       type: Boolean,
@@ -94,10 +105,10 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      duration: 25,
-      shortRest: 5,
-      pomodoroNum: 4,
-      longRest: 10,
+      duration: POMODORO_TIME.TWENTYFIVE,
+      shortRest: POMODORO_TIME.FIVE,
+      pomodoroNum: POMODORO_TIME.FOUR,
+      longRest: POMODORO_TIME.TEN,
       autoRest: true,
       pomodoroResult: {duration: null, shortRest: null, pomodoroNum: null, longRest: null, autoRest: null},
     }
@@ -110,48 +121,65 @@ export default {
   watch: {
     value(val) {
       this.dialogVisible = val;
+
+      if(this.dialogVisible) {
+        this.initSetting();
+      }
     }
   },
 
   methods: {
+    initSetting() {
+      this.duration = POMODORO_TIME.TWENTYFIVE;
+      this.shortRest = POMODORO_TIME.FIVE;
+      this.pomodoroNum = POMODORO_TIME.FOUR;
+      this.longRest = POMODORO_TIME.TEN;
+      this.autoRest = true;
+    },
     durationMinus() {
-      if (this.duration > 5) {
-        this.duration = this.duration - 5;
+      // if (this.duration > POMODORO_TIME.FIVE) {
+      //   this.duration = this.duration - POMODORO_TIME.FIVE;
+      // }
+      if (this.duration > 0) {
+        this.duration = this.duration - POMODORO_TIME.FIVE;
       }
     },
     durationAdd() {
-      if (this.duration < 120) {
-        this.duration = this.duration + 5;
+      // if (this.duration < POMODORO_TIME.HUNDREDTWENTY) {
+      //   this.duration = this.duration + POMODORO_TIME.FIVE;
+      // }
+      if (this.duration < POMODORO_TIME.HUNDREDTWENTY) {
+        this.duration = this.duration + 1;
       }
     },
     shortRestMinus() {
       if (this.shortRest > 0) {
-        this.shortRest = this.shortRest - 1;
+        this.shortRest = this.shortRest - POMODORO_TIME.ONE;
       }
     },
     shortRestAdd() {
-      if (this.shortRest < 10) {
-        this.shortRest = this.shortRest + 1;
+      if (this.shortRest < POMODORO_TIME.TEN) {
+        this.shortRest = this.shortRest + POMODORO_TIME.ONE;
       }
     },
     pomodoroNumMinus() {
       if (this.pomodoroNum > 0) {
-        this.pomodoroNum = this.pomodoroNum - 1;
+        this.pomodoroNum = this.pomodoroNum - POMODORO_TIME.ONE;
       }
     },
     pomodoroNumAdd() {
-      if (this.pomodoroNum < 10) {
-        this.pomodoroNum = this.pomodoroNum + 1;
+      if (this.pomodoroNum < POMODORO_TIME.TEN) {
+        this.pomodoroNum = this.pomodoroNum + POMODORO_TIME.ONE;
       }
     },
     longRestMinus() {
       if (this.longRest > 0) {
-        this.longRest = this.longRest - 1;
+        this.longRest = this.longRest - POMODORO_TIME.ONE;
       }
     },
     longRestAdd() {
-      if (this.longRest < 20) {
-        this.longRest = this.longRest + 1;
+      if (this.longRest < POMODORO_TIME.TWENTY) {
+        this.longRest = this.longRest + POMODORO_TIME.ONE;
       }
     },
     handleClose() {

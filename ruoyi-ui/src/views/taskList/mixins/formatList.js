@@ -1,7 +1,7 @@
 const FormatList = {
   methods: {
     formattedTaskList(taskList) {
-      const classifiedTodoList = {};
+      const formatTaskList = {};
 
       for (let row of taskList) {
         if(row.createTimeCopy !== null) {
@@ -45,20 +45,23 @@ const FormatList = {
           };
         }
 
-        if(classifiedTodoList[row.createTimeCopy]) {
-          classifiedTodoList[row.createTimeCopy].push(row);
+        if(formatTaskList[row.createTimeCopy]) {
+          // let key = row.createTimeCopy.toISOString().slice(0,10)
+          // formatTaskList[key].push(row);
+
+          formatTaskList[row.createTimeCopy].push(row);
         }else {
-          classifiedTodoList[row.createTimeCopy] = [row];
+          formatTaskList[row.createTimeCopy] = [row];
         }
       }
 
-      Object.keys(classifiedTodoList).forEach(date => {
-        classifiedTodoList[date].sort((a, b) => {
+      Object.keys(formatTaskList).forEach(date => {
+        formatTaskList[date].sort((a, b) => {
           return new Date(a.createTimeCopy) - new Date(b.createTimeCopy);
         })
       })
 
-      return classifiedTodoList;
+      return formatTaskList;
     },
   }
 }

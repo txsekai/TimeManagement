@@ -7,12 +7,19 @@ import com.ruoyi.taskList.domain.entity.*;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
 import com.ruoyi.taskList.mapper.*;
 import com.ruoyi.taskList.service.ITaskListService;
+import com.ruoyi.taskList.util.UserInfoUtil;
+import com.yupi.yucongming.dev.client.YuCongMingClient;
+import com.yupi.yucongming.dev.common.BaseResponse;
+import com.yupi.yucongming.dev.model.DevChatRequest;
+import com.yupi.yucongming.dev.model.DevChatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> implements ITaskListService {
@@ -31,6 +38,9 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
 
     @Autowired
     private TemplateTagsMapper templateTagsMapper;
+
+    @Autowired
+    private MsgInfoMapper msgInfoMapper;
 
     @Override
     public List<TaskList> selectToDoList(TaskListQueryParam taskListQueryParam) {
@@ -134,5 +144,66 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
         Long taskRepeatId = taskList.getTaskRepeatId();
 
         return taskRepeatMapper.deleteById(taskRepeatId);
+    }
+
+    @Override
+    public int insertUserMsgToMsgInfo(MsgInfo msgInfo) {
+        msgInfo.setMsgContent(msgInfo.getMsgContent());
+        msgInfo.setUserId(UserInfoUtil.getUserId());
+        msgInfo.setIsAssistantMsg(false);
+        Date date = new Date();
+        msgInfo.setCreateTime(date);
+
+        return msgInfoMapper.insert(msgInfo);
+    }
+
+    @Override
+    public List<MsgInfo> getMsgInfoList() {
+        QueryWrapper<MsgInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc("create_time");
+
+        List<MsgInfo> msgInfoList = msgInfoMapper.selectList(queryWrapper);
+
+        return msgInfoList;
+    }
+
+    @Override
+    @Async("taskExecutor")
+    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo) {
+        BaseResponse response = sendUserQuestion(msgInfo);
+        return CompletableFuture.completedFuture(response);
+    }
+
+    @Override
+    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo) {
+
+        String accessKey = "lxzv6tjgcsamqmy5pycm6x33cyuuql8h";
+        String secretKey = "2wh7bdciprnuay7n9ie7c8f5m7g6jslj";
+        YuCongMingClient client = new YuCongMingClient(accessKey, secretKey);
+
+        DevChatRequest devChatRequest = new DevChatRequest();
+        devChatRequest.setModelId(1771479426170085377L);
+        devChatRequest.setMessage(msgInfo.getMsgContent());
+
+        BaseResponse<DevChatResponse> response = client.doChat(devChatRequest);
+        System.out.println(response.getData());
+
+        return response;
+    }
+
+    @Override
+    public Long insertAssistantMsgToMsgInfo(String responseData) {
+        MsgInfo msgInfo = new MsgInfo();
+        msgInfo.setMsgContent(responseData);
+//        bug 取不到userId
+//        LoginUser user = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        msgInfo.setUserId(1L);
+        msgInfo.setIsAssistantMsg(true);
+        Date date = new Date();
+        msgInfo.setCreateTime(date);
+
+        msgInfoMapper.insert(msgInfo);
+
+        return msgInfo.getMsgId();
     }
 }
