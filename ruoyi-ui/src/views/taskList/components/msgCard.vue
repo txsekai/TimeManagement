@@ -111,8 +111,20 @@ export default {
         event.preventDefault();
         this.handleSendMsg();
       }
+    },
+    scrollToBottom() {
+     this.$nextTick(() => {
+       let element = this.$el.querySelector('.msg-card');
+       element.scrollTop = element.scrollHeight;
+     })
     }
   },
+
+  watch: {
+    msgInfoList() {
+      this.scrollToBottom();
+    }
+  }
 }
 </script>
 
@@ -149,5 +161,7 @@ export default {
 ::v-deep textarea {
   resize: none;
   padding-right: 36px;
+  min-height: 60px !important;
+  max-height: 60px;
 }
 </style>

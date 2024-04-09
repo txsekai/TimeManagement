@@ -111,7 +111,7 @@ export default {
 }
 
 .item:first-child {
-  height: calc(100vh - 174px);
+  height: calc(100vh - 200px);
   grid-column: 1;
   max-width: 100%;
   word-break: break-word;
