@@ -39,17 +39,17 @@
         </el-form>
 
         <div class="card-container card-grid">
-          <el-card>
+          <el-card class="task-card">
             <h3 style="margin: 10px 0">待办</h3>
             <task-list-item ref="taskTodoListItem" :type="todo" :query-params="queryParams"></task-list-item>
           </el-card>
 
-          <el-card>
+          <el-card class="task-card">
             <h3 style="margin: 10px 0">正在处理</h3>
             <task-list-item ref="taskDoingListItem" :type="doing" :query-params="queryParams"></task-list-item>
           </el-card>
 
-          <el-card>
+          <el-card class="task-card">
             <h3 style="margin: 10px 0">已完成</h3>
             <task-list-done-item ref="taskDoneListItem" :type="done" :query-params="queryParams"></task-list-done-item>
           </el-card>
@@ -117,6 +117,10 @@ export default {
   word-break: break-word;
 }
 
+.item:last-child {
+  height: calc(100vh - 140px);
+}
+
 .card-container {
   margin: 0 auto;
 }
@@ -125,6 +129,11 @@ export default {
   display: grid;
   column-gap: 20px;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.task-card {
+  height: calc(100vh - 170px);
+  overflow-y: auto;
 }
 
 </style>

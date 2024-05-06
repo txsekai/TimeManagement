@@ -1,6 +1,7 @@
 package com.ruoyi.taskList.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ruoyi.taskList.domain.entity.TaskList;
 import com.ruoyi.taskList.domain.entity.MsgInfo;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
@@ -41,9 +42,13 @@ public interface ITaskListService extends IService<TaskList> {
 
     public int insertUserMsgToMsgInfo(MsgInfo msgInfo);
 
-    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo);
+    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo, Long assistantModuleId);
 
-    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo);
+//    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo);
 
     public Long insertAssistantMsgToMsgInfo(String responseData);
+
+    public CompletableFuture<BaseResponse<DevChatResponse>> changeMsgToJSON(MsgInfo msgInfo, Long changeMsgToJSONModuleId);
+
+    public int insertMsgToTaskList(String result) throws JsonProcessingException;
 }

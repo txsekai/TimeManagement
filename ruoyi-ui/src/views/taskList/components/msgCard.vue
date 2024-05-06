@@ -52,7 +52,7 @@ export default {
     insertUserSendMsg(msg) {
       addUserMsg(msg).then(() => {
         // 请求assistant的处理
-        // this.handleAssistantProcess(msg);
+        this.handleAssistantProcess(msg);
 
         clearInterval(this.timerInterval);
 

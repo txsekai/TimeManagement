@@ -108,3 +108,11 @@ export function getAssistantCatch() {
     method: 'get'
   })
 }
+
+export function handleAssistantMsgToTask(query) {
+  return request({
+    url: '/taskList/assistantMsgToTask',
+    method: 'get',
+    params: query
+  })
+}

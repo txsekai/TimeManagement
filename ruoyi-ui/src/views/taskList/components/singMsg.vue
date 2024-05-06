@@ -5,6 +5,10 @@
         <img src="../../../assets/images/plan_picture.webp" class="msg-avatar">
         <div class="show-msg-content assistant-content" style="white-space: pre-wrap;">
           {{ msg.msgContent }}
+          <el-divider></el-divider>
+          <el-tooltip content="创建任务" placement="bottom-start">
+            <el-button class="show-create-task-btn" icon="el-icon-tickets" @click="handleCreateTask(msg)"></el-button>
+          </el-tooltip>
         </div>
       </el-row>
 
@@ -18,6 +22,7 @@
 
 <script>
 import {mapGetters} from "vuex";
+import {handleAssistantMsgToTask} from "../../../api/taskList/taskList";
 
 export default {
   name: 'SingMsg',
@@ -40,6 +45,20 @@ export default {
     ]),
   },
 
+  methods: {
+    handleCreateTask(msg) {
+      this.$confirm("确认根据该内容来创建任务吗?", "确认", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        handleAssistantMsgToTask(msg).then(() => {
+          this.$modal.msgSuccess("成功返回");
+          // this.$bus.$emit('call-handle-query');
+        })
+      }).catch(() => {})
+    },
+  }
 }
 </script>
 
@@ -76,5 +95,12 @@ export default {
 .user-content {
   background-color: #e8f4ff;
   color: #1890ff;
+}
+
+.show-create-task-btn {
+  border: none;
+  padding: 0 10px;
+  background: none;
+  font-size: 16px;
 }
 </style>

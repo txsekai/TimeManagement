@@ -2,6 +2,9 @@ package com.ruoyi.taskList.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.taskList.domain.entity.*;
 import com.ruoyi.taskList.domain.query.TaskListQueryParam;
@@ -167,28 +170,30 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
         return msgInfoList;
     }
 
-    @Override
-    @Async("taskExecutor")
-    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo) {
-        BaseResponse response = sendUserQuestion(msgInfo);
-        return CompletableFuture.completedFuture(response);
-    }
+    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo, Long moduleId) {
 
-    @Override
-    public BaseResponse<DevChatResponse> sendUserQuestion(MsgInfo msgInfo) {
-
-        String accessKey = "lxzv6tjgcsamqmy5pycm6x33cyuuql8h";
-        String secretKey = "2wh7bdciprnuay7n9ie7c8f5m7g6jslj";
+//        String accessKey = "lxzv6tjgcsamqmy5pycm6x33cyuuql8h";
+//        String secretKey = "2wh7bdciprnuay7n9ie7c8f5m7g6jslj";
+        String accessKey = "d6nlh6jpio7wzalephnhmkxdps444hbz";
+        String secretKey = "t1ggvf5nkzfxvbngpbeg7td4pu5al6od";
         YuCongMingClient client = new YuCongMingClient(accessKey, secretKey);
 
         DevChatRequest devChatRequest = new DevChatRequest();
-        devChatRequest.setModelId(1771479426170085377L);
+        devChatRequest.setModelId(moduleId);
         devChatRequest.setMessage(msgInfo.getMsgContent());
 
+        // todo 长时间没有返回数据应该怎么处理
         BaseResponse<DevChatResponse> response = client.doChat(devChatRequest);
         System.out.println(response.getData());
 
         return response;
+    }
+
+    @Override
+    @Async("taskExecutor")
+    public CompletableFuture<BaseResponse<DevChatResponse>> sendUserQuestionAsync(MsgInfo msgInfo, Long assistantModuleId) {
+        BaseResponse response = sendUserQuestion(msgInfo, assistantModuleId);
+        return CompletableFuture.completedFuture(response);
     }
 
     @Override
@@ -205,5 +210,33 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskList> i
         msgInfoMapper.insert(msgInfo);
 
         return msgInfo.getMsgId();
+    }
+
+    @Override
+    @Async("taskExecutor")
+    public CompletableFuture<BaseResponse<DevChatResponse>> changeMsgToJSON(MsgInfo msgInfo, Long changeMsgToJSONModuleId) {
+        BaseResponse response = sendUserQuestion(msgInfo, changeMsgToJSONModuleId);
+        return CompletableFuture.completedFuture(response);
+    }
+
+    @Override
+    public int insertMsgToTaskList(String result) throws JsonProcessingException {
+        int row = 0;
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<TaskList> taskList = mapper.readValue(result, new TypeReference<List<TaskList>>(){});
+
+        for(TaskList task : taskList) {
+            task.setTaskStatus("0");
+            task.setTaskPriority("0");
+            Date date = new Date();
+            task.setCreateTime(date);
+            task.setCreateTimeCopy(date);
+            task.setUserId(1L);
+            taskListMapper.insert(task);
+            row++;
+        }
+        return row;
     }
 }

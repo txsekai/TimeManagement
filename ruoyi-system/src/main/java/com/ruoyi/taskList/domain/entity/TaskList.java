@@ -2,6 +2,8 @@ package com.ruoyi.taskList.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -16,12 +18,17 @@ public class TaskList extends BaseEntity {
     @TableId
     private Long taskId;
 
+    @JsonProperty("taskName")
     private String taskName;
 
     private String taskStatus;
 
+    @JsonProperty("taskStartTime")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "GMT+8")
     private Date taskStartTime;
 
+    @JsonProperty("taskCompletedTime")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "GMT+8")
     private Date taskCompletedTime;
 
     private Long taskRepeatId;
